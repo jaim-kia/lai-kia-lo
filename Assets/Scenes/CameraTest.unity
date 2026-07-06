@@ -269,7 +269,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1af719e86f0693a4a929362157778a7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  followSpeed: 0.1
+  followSpeed: 1
   offset: {x: 0, y: 0, z: -10}
 --- !u!1 &410087039
 GameObject:
@@ -786,7 +786,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 673596202}
-  m_Material: {fileID: 13400000, guid: f3348384592f1504c827f9198b106cc6, type: 2}
+  m_Material: {fileID: 13400000, guid: 066a74a066b5ec3419229f55944d9139, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
