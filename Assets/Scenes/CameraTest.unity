@@ -269,8 +269,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1af719e86f0693a4a929362157778a7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  followSpeed: 1
   offset: {x: 0, y: 0, z: -10}
+  nudgeAmount: 3
+  nudgeSmoothTime: 0.3
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -649,6 +650,8 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
+  cayoteTime: 0.15
+  jumpBufferTime: 0.15
 --- !u!114 &673596210
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -774,6 +777,22 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: 9caa3d8a-6b2f-4e8e-8bad-6ede561bd9be
     m_ActionName: UI/TrackedDeviceOrientation
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 673596209}
+        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_MethodName: CameraMove
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 064184d4-75bc-4b4a-b5ee-a58b7ed67306
+    m_ActionName: 'Player/CameraMove[/Keyboard/w,/Keyboard/s]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: Keyboard&Mouse
   m_DefaultActionMap: Player

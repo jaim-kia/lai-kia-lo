@@ -19,7 +19,7 @@ public class PlayerController : MonoBehaviour
 
     private float horizontal;
     private bool grounded = false;
-    private bool jumpCut = false; // flag for short-hop release
+    private bool jumpCut = false; 
 
     private float cayoteTimeCounter;
     private float jumpBufferCounter;
