@@ -19,47 +19,53 @@ public class PlayerController : MonoBehaviour
 
     private float horizontal;
     private bool grounded = false;
+    private bool jumpCut = false; // flag for short-hop release
 
     private float cayoteTimeCounter;
     private float jumpBufferCounter;
 
     public static PlayerController Instance;
     
+    public static float CameraMoveValue;
     private void Awake()
     {
         Physics.gravity = new Vector3(0, -19.6f, 0);
 
-        if(Instance != null && Instance != this)
-        {
+        if (Instance != null && Instance != this)
             Destroy(gameObject);
-        }
         else
-        {
             Instance = this;
-        }
     }
 
     private void Update()
     {
+        // Timers only — no physics writes here
         if (grounded)
             cayoteTimeCounter = cayoteTime;
         else
             cayoteTimeCounter -= Time.deltaTime;
 
         jumpBufferCounter -= Time.deltaTime;
-
-        if (jumpBufferCounter > 0f && cayoteTimeCounter > 0f)
-        {
-            rb.linearVelocity = new Vector3(rb.linearVelocity.x, jumpingPower, 0);
-
-            jumpBufferCounter = 0f;
-            cayoteTimeCounter = 0f; 
-        }
     }
 
     private void FixedUpdate()
     {
-        rb.linearVelocity = new Vector3(horizontal * speed, rb.linearVelocity.y, 0);
+        float verticalVelocity = rb.linearVelocity.y;
+
+        if (jumpBufferCounter > 0f && cayoteTimeCounter > 0f)
+        {
+            verticalVelocity = jumpingPower;
+            jumpBufferCounter = 0f;
+            cayoteTimeCounter = 0f;
+        }
+
+        if (jumpCut && verticalVelocity > 0f)
+        {
+            verticalVelocity /= 2f;
+            jumpCut = false;
+        }
+
+        rb.linearVelocity = new Vector3(horizontal * speed, verticalVelocity, 0);
     }
 
     public void Move(InputAction.CallbackContext context)
@@ -69,16 +75,24 @@ public class PlayerController : MonoBehaviour
 
     public void Jump(InputAction.CallbackContext context)
     {
-        if(context.performed)
+        if (context.performed)
         {
             jumpBufferCounter = jumpBufferTime;
         }
-        else if (context.canceled && rb.linearVelocity.y > 0) {
-            rb.linearVelocity = new Vector3(rb.linearVelocity.x, rb.linearVelocity.y/2, 0);
+        else if (context.canceled)
+        {
+            jumpCut = true;
         }
     }
 
-    // Ground Check Logic - uses bit comparison for layers
+    public void CameraMove(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+            CameraMoveValue = context.ReadValue<float>();
+        else if (context.canceled)
+            CameraMoveValue = 0;
+    }
+
     private void OnCollisionStay(Collision collision)
     {
         if ((groundLayer.value & (1 << collision.gameObject.layer)) == 0) return;
@@ -96,8 +110,6 @@ public class PlayerController : MonoBehaviour
     private void OnCollisionExit(Collision collision)
     {
         if ((groundLayer.value & (1 << collision.gameObject.layer)) != 0)
-        {
             grounded = false;
-        }
     }
 }
