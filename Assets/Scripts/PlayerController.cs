@@ -46,8 +46,10 @@ public class PlayerController : MonoBehaviour
     {
         grounded = Physics.CheckBox(groundCheck.position, groundCheckSize / 2f, Quaternion.identity, groundLayer);
         
-        if (grounded) 
+        if (grounded) {
             cayoteTimeCounter = cayoteTime;
+            doubleJumped = false;
+        }
         else
             cayoteTimeCounter -= Time.fixedDeltaTime;
 
@@ -55,15 +57,27 @@ public class PlayerController : MonoBehaviour
 
         float verticalVelocity = rb.linearVelocity.y;
 
-        if (jumpBufferCounter > 0f && cayoteTimeCounter > 0f)
+        bool wantsToJump = jumpBufferCounter > 0f;
+        bool canCayoteJump = cayoteTimeCounter > 0f;
+        bool canAirJump = !grounded && !canCayoteJump && canDoubleJump && !doubleJumped;
+
+        if (wantsToJump && canCayoteJump)
         {
             verticalVelocity = jumpingPower;
             jumpBufferCounter = 0f;
             cayoteTimeCounter = 0f;
             jumpCut = false;
+            doubleJumped = false;
+        }
+        else if (wantsToJump && canAirJump)
+        {
+            verticalVelocity = jumpingPower;
+            jumpBufferCounter = 0f;
+            doubleJumped = true;
+            jumpCut = false;
         }
 
-        if (jumpCut && verticalVelocity > 0f)
+        if (jumpCut && verticalVelocity > 0f && !doubleJumped)
         {
             verticalVelocity /= 3f;
             jumpCut = false;
