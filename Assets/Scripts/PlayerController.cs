@@ -20,6 +20,8 @@ public class PlayerController : MonoBehaviour
     private float horizontal;
     private bool grounded = false;
     private bool jumpCut = false; 
+    private bool canDoubleJump = true;
+    private bool doubleJumped = false;
 
     private float cayoteTimeCounter;
     private float jumpBufferCounter;
@@ -65,7 +67,8 @@ public class PlayerController : MonoBehaviour
             jumpCut = false;
         }
 
-        rb.linearVelocity = new Vector3(horizontal * speed, verticalVelocity, 0);
+        if (CameraMoveValue == 0)
+            rb.linearVelocity = new Vector3(horizontal * speed, verticalVelocity, 0);
     }
 
     public void Move(InputAction.CallbackContext context)
@@ -87,7 +90,9 @@ public class PlayerController : MonoBehaviour
 
     public void CameraMove(InputAction.CallbackContext context)
     {
-        if (context.performed)
+        if (rb.linearVelocity != new Vector3(0, 0, 0))
+            CameraMoveValue = 0;
+        else if (context.performed)
             CameraMoveValue = context.ReadValue<float>();
         else if (context.canceled)
             CameraMoveValue = 0;

@@ -93,7 +93,7 @@
                     "id": "064184d4-75bc-4b4a-b5ee-a58b7ed67306",
                     "expectedControlType": "Axis",
                     "processors": "",
-                    "interactions": "",
+                    "interactions": "Hold(duration=0.4,pressPoint=0.5)",
                     "initialStateCheck": true
                 }
             ],
