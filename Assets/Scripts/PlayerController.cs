@@ -17,6 +17,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float cayoteTime = 0.15f;
     [SerializeField] float jumpBufferTime = 0.15f;
 
+    [SerializeField] Transform groundCheck;
+    [SerializeField] Vector3 groundCheckSize = new Vector3(0.5f, 0.1f, 0.5f);
+
     private float horizontal;
     private bool grounded = false;
     private bool jumpCut = false; 
@@ -39,19 +42,17 @@ public class PlayerController : MonoBehaviour
             Instance = this;
     }
 
-    private void Update()
-    {
-        // Timers only — no physics writes here
-        if (grounded)
-            cayoteTimeCounter = cayoteTime;
-        else
-            cayoteTimeCounter -= Time.deltaTime;
-
-        jumpBufferCounter -= Time.deltaTime;
-    }
-
     private void FixedUpdate()
     {
+        grounded = Physics.CheckBox(groundCheck.position, groundCheckSize / 2f, Quaternion.identity, groundLayer);
+        
+        if (grounded) 
+            cayoteTimeCounter = cayoteTime;
+        else
+            cayoteTimeCounter -= Time.fixedDeltaTime;
+
+        jumpBufferCounter -= Time.fixedDeltaTime;
+
         float verticalVelocity = rb.linearVelocity.y;
 
         if (jumpBufferCounter > 0f && cayoteTimeCounter > 0f)
@@ -59,15 +60,16 @@ public class PlayerController : MonoBehaviour
             verticalVelocity = jumpingPower;
             jumpBufferCounter = 0f;
             cayoteTimeCounter = 0f;
+            jumpCut = false;
         }
 
         if (jumpCut && verticalVelocity > 0f)
         {
-            verticalVelocity /= 2f;
+            verticalVelocity /= 3f;
             jumpCut = false;
         }
 
-        if (CameraMoveValue == 0)
+        if (Mathf.Approximately(CameraMoveValue, 0f))
             rb.linearVelocity = new Vector3(horizontal * speed, verticalVelocity, 0);
     }
 
@@ -96,25 +98,5 @@ public class PlayerController : MonoBehaviour
             CameraMoveValue = context.ReadValue<float>();
         else if (context.canceled)
             CameraMoveValue = 0;
-    }
-
-    private void OnCollisionStay(Collision collision)
-    {
-        if ((groundLayer.value & (1 << collision.gameObject.layer)) == 0) return;
-
-        foreach (ContactPoint contact in collision.contacts)
-        {
-            if (Vector3.Dot(contact.normal, Vector3.up) > 0.5f)
-            {
-                grounded = true;
-                return;
-            }
-        }
-    }
-
-    private void OnCollisionExit(Collision collision)
-    {
-        if ((groundLayer.value & (1 << collision.gameObject.layer)) != 0)
-            grounded = false;
     }
 }
