@@ -5,6 +5,7 @@ public class PlayerController : MonoBehaviour
 {
     [Header("Player Component References")]
     [SerializeField] Rigidbody rb;
+    [SerializeField] Vector3 grav;
 
     [Header("Player Settings")]
     [SerializeField] float speed;
@@ -18,7 +19,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float jumpBufferTime = 0.15f;
 
     [SerializeField] Transform groundCheck;
-    [SerializeField] Vector3 groundCheckSize = new Vector3(0.5f, 0.1f, 0.5f);
+    [SerializeField] Vector3 groundCheckSize;
 
     private float horizontal;
     private bool grounded = false;
@@ -32,9 +33,26 @@ public class PlayerController : MonoBehaviour
     public static PlayerController Instance;
     
     public static float CameraMoveValue;
+
+    [Header("Wall Jump")]
+    [SerializeField] Transform wallCheckRight;
+    [SerializeField] Transform wallCheckLeft;
+    [SerializeField] Vector3 wallCheckSize;
+    [SerializeField] LayerMask wallLayer;
+    [SerializeField] float wallSlideSpeed;
+    [SerializeField] float wallJumpForceX;
+    [SerializeField] float wallJumpForceY;
+    [SerializeField] float wallJumpLockTime;
+
+    private bool touchingWallRight;
+    private bool touchingWallLeft;
+    private bool isWallSliding;
+    private float wallJumpLockCounter;
+    private int wallJumpDir;
+
     private void Awake()
     {
-        Physics.gravity = new Vector3(0, -19.6f, 0);
+        Physics.gravity = grav;
 
         if (Instance != null && Instance != this)
             Destroy(gameObject);
@@ -44,6 +62,20 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        touchingWallRight = Physics.CheckBox(wallCheckRight.position, wallCheckSize / 2f, Quaternion.identity, wallLayer);
+        touchingWallLeft = Physics.CheckBox(wallCheckLeft.position, wallCheckSize / 2f, Quaternion.identity, wallLayer);
+
+        bool touchingWall = (touchingWallRight || touchingWallLeft) && !grounded;
+
+        isWallSliding = touchingWall
+            && ((touchingWallRight && horizontal > 0.1f) || (touchingWallLeft && horizontal < -0.1f))
+            && rb.linearVelocity.y < 0f;
+
+        if (isWallSliding)
+        {
+            doubleJumped = false;
+        }
+
         grounded = Physics.CheckBox(groundCheck.position, groundCheckSize / 2f, Quaternion.identity, groundLayer);
         
         if (grounded) {
@@ -57,8 +89,15 @@ public class PlayerController : MonoBehaviour
 
         float verticalVelocity = rb.linearVelocity.y;
 
+        if (wallJumpLockCounter > 0f)
+            wallJumpLockCounter -= Time.fixedDeltaTime;
+
+        if (isWallSliding && verticalVelocity < -wallSlideSpeed)
+            verticalVelocity = -wallSlideSpeed;
+
         bool wantsToJump = jumpBufferCounter > 0f;
         bool canCayoteJump = cayoteTimeCounter > 0f;
+        bool canWallJump = touchingWall && wantsToJump;
         bool canAirJump = !grounded && !canCayoteJump && canDoubleJump && !doubleJumped;
 
         if (wantsToJump && canCayoteJump)
@@ -67,24 +106,40 @@ public class PlayerController : MonoBehaviour
             jumpBufferCounter = 0f;
             cayoteTimeCounter = 0f;
             jumpCut = false;
-            doubleJumped = false;
+            doubleJumped = false;   
+        }
+        else if (canWallJump)
+        {
+            wallJumpDir = touchingWallRight ? -1 : 1;
+            verticalVelocity = wallJumpForceY;
+            wallJumpLockCounter = wallJumpLockTime;
+
+            jumpBufferCounter = 0f;
+            jumpCut = false;        // disable jumpcutting on walls
+            doubleJumped = false;   
         }
         else if (wantsToJump && canAirJump)
         {
             verticalVelocity = jumpingPower;
             jumpBufferCounter = 0f;
             doubleJumped = true;
-            jumpCut = false;
         }
 
-        if (jumpCut && verticalVelocity > 0f && !doubleJumped)
+        if (jumpCut && verticalVelocity > 0f)
         {
             verticalVelocity /= 3f;
             jumpCut = false;
         }
 
+        // Setting Player Linear Velocity
+        float finalHorizontal;
+        if (wallJumpLockCounter > 0f) 
+            finalHorizontal = wallJumpDir * (wallJumpForceX / speed);
+        else
+            finalHorizontal = horizontal;
+
         if (Mathf.Approximately(CameraMoveValue, 0f))
-            rb.linearVelocity = new Vector3(horizontal * speed, verticalVelocity, 0);
+            rb.linearVelocity = new Vector3(finalHorizontal * speed, verticalVelocity, 0);
     }
 
     public void Move(InputAction.CallbackContext context)
@@ -95,13 +150,9 @@ public class PlayerController : MonoBehaviour
     public void Jump(InputAction.CallbackContext context)
     {
         if (context.performed)
-        {
             jumpBufferCounter = jumpBufferTime;
-        }
         else if (context.canceled)
-        {
             jumpCut = true;
-        }
     }
 
     public void CameraMove(InputAction.CallbackContext context)
