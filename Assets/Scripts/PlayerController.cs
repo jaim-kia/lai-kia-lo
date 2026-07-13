@@ -54,8 +54,20 @@ public class PlayerController : MonoBehaviour
     private FacingDirection facingDirection = FacingDirection.Right;
     public FacingDirection Facing => facingDirection;
 
+    [Header("Dash")]
+    [SerializeField] private float dashForce = 30f;
+    [SerializeField] private float dashDuration = 0.15f;
+
+    public bool dashReady = true;
+    private bool isDashing;
+    private Vector3 dashVelocity;
+
+    [SerializeField] float sprintSpeedMultiplier = 1.5f;
+    private float baseSpeed;
+
     private void Awake()
     {
+        baseSpeed = speed;
         Physics.gravity = grav;
 
         if (Instance != null && Instance != this)
@@ -135,6 +147,12 @@ public class PlayerController : MonoBehaviour
             jumpCut = false;
         }
 
+        if (isDashing)
+        {
+            rb.linearVelocity = dashVelocity;
+            return;
+        }
+
         // Setting Player Linear Velocity
         float finalHorizontal;
         if (wallJumpLockCounter > 0f)
@@ -172,5 +190,39 @@ public class PlayerController : MonoBehaviour
             CameraMoveValue = context.ReadValue<float>();
         else if (context.canceled)
             CameraMoveValue = 0;
+    }
+
+    public void Dash()
+    {
+        if (!dashReady || isDashing)
+            return;
+
+        dashReady = false;
+        StartCoroutine(DoDash());
+    }
+
+    private System.Collections.IEnumerator DoDash()
+    {
+        isDashing = true;
+
+        float dir = facingDirection == FacingDirection.Right ? 1f : -1f;
+        dashVelocity = new Vector3(dir * dashForce, 0f, 0f);
+
+        yield return new WaitForSeconds(dashDuration);
+
+        isDashing = false;
+    }
+
+    public void ResetDash()
+    {
+        dashReady = true;
+    }
+
+    public void SprintEnable() {
+        speed = baseSpeed * sprintSpeedMultiplier;
+    }
+
+    public void SprintDisable() {
+        speed = baseSpeed;
     }
 }
