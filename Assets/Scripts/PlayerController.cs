@@ -50,6 +50,10 @@ public class PlayerController : MonoBehaviour
     private float wallJumpLockCounter;
     private int wallJumpDir;
 
+    public enum FacingDirection { Left, Right }
+    private FacingDirection facingDirection = FacingDirection.Right;
+    public FacingDirection Facing => facingDirection;
+
     private void Awake()
     {
         Physics.gravity = grav;
@@ -133,10 +137,15 @@ public class PlayerController : MonoBehaviour
 
         // Setting Player Linear Velocity
         float finalHorizontal;
-        if (wallJumpLockCounter > 0f) 
-            finalHorizontal = wallJumpDir * (wallJumpForceX / speed);
+        if (wallJumpLockCounter > 0f)
+            finalHorizontal = wallJumpDir * (wallJumpForceX / speed); 
         else
             finalHorizontal = horizontal;
+        
+        if (finalHorizontal > 0f)
+            facingDirection = FacingDirection.Right;
+        else if (finalHorizontal < 0)
+            facingDirection = FacingDirection.Left;
 
         if (Mathf.Approximately(CameraMoveValue, 0f))
             rb.linearVelocity = new Vector3(finalHorizontal * speed, verticalVelocity, 0);
