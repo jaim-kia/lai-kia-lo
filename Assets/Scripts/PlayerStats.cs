@@ -16,6 +16,15 @@ public class PlayerStats : MonoBehaviour
     [SerializeField] private int manualTriggerThreshold;
     [SerializeField] private int autoTriggerThreshold;
 
+    [Header("Currency")]
+    [SerializeField] private int incenseSticks = 3;
+
+    [Header("Respawn")]
+    [SerializeField] private Vector3 spawnPoint;
+
+    public int IncenseSticks => incenseSticks;
+    public int MaxHealth => maxHealth;
+
     private int attackMana;
     private int dashMana;
 
@@ -32,6 +41,7 @@ public class PlayerStats : MonoBehaviour
         else
             Instance = this;
 
+        spawnPoint = transform.position;
         currentHealth = maxHealth;
         currentShield = 0;
         attackMana = 0;
@@ -77,9 +87,23 @@ public class PlayerStats : MonoBehaviour
         Debug.Log("Shield: " + currentShield);
     }
 
+    public void SetSpawnPoint(Vector3 newSpawnPoint)
+    {
+        spawnPoint = newSpawnPoint;
+        Debug.Log("Spawn point set: " + spawnPoint);
+    }
+
+
     private void Die()
     {
         Debug.Log("Player died");
+
+        currentHealth = maxHealth;
+        currentShield = 0;
+        transform.position = spawnPoint;
+
+        if (TryGetComponent<Rigidbody>(out var rb))
+            rb.linearVelocity = Vector3.zero;
     }
 
     // ---------------- Mana ----------------
@@ -158,5 +182,20 @@ public class PlayerStats : MonoBehaviour
     public int returnMaxHealth()
     {
         return maxHealth;
+    }
+
+    public void AddIncenseSticks(int amount)
+    {
+        incenseSticks += amount;
+        Debug.Log("Incense Sticks: " + incenseSticks);
+    }
+
+    public bool TrySpendIncenseSticks(int amount)
+    {
+        if (incenseSticks < amount) return false;
+
+        incenseSticks -= amount;
+        Debug.Log("Incense Sticks: " + incenseSticks);
+        return true;
     }
 }
