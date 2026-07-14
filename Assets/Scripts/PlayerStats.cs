@@ -23,6 +23,7 @@ public class PlayerStats : MonoBehaviour
 
     public event Action OnAutoAttackSkill;
     public event Action OnAutoDashSkill;
+    public event Action OnMaxManaSkill;
 
     private void Awake()
     {
@@ -108,12 +109,22 @@ public class PlayerStats : MonoBehaviour
             attackMana = 0;
             dashMana = 0;
             OnAutoAttackSkill?.Invoke();
+            return;
         }
-        else if (dashMana >= autoTriggerThreshold)
+
+        if (dashMana >= autoTriggerThreshold)
         {
             attackMana = 0;
             dashMana = 0;
             OnAutoDashSkill?.Invoke();
+            return;
+        }
+
+        if (attackMana + dashMana >= maxTotalMana)
+        {
+            attackMana = 0;
+            dashMana = 0;
+            OnMaxManaSkill?.Invoke();
         }
     }
 
@@ -131,5 +142,11 @@ public class PlayerStats : MonoBehaviour
 
         dashMana -= manualTriggerThreshold;
         return true;
+    }
+
+    public void Heal(int amount)
+    {
+        currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
+        Debug.Log("Health: " + currentHealth);
     }
 }

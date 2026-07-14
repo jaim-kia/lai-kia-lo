@@ -20,10 +20,16 @@ public class PlayerSkillManager : MonoBehaviour
     [SerializeField] private float autoShieldSlowMultiplier = 0.5f;
     [SerializeField] private float autoShieldSlowDuration = 3f;
 
+    [Header("Max Mana Skill")]
+    [SerializeField] private int maxManaHealAmount = 1;
+    [SerializeField] private int maxManaShieldAmount = 1;
+    [SerializeField] private int maxManaProjectileDamage = 2;
+
     private void Start()
     {
         PlayerStats.Instance.OnAutoAttackSkill += AutoFireProjectile;
         PlayerStats.Instance.OnAutoDashSkill += AutoGrantShield;
+        PlayerStats.Instance.OnMaxManaSkill += MaxManaSkill;
     }
 
     private void OnDisable()
@@ -32,7 +38,15 @@ public class PlayerSkillManager : MonoBehaviour
         {
             PlayerStats.Instance.OnAutoAttackSkill -= AutoFireProjectile;
             PlayerStats.Instance.OnAutoDashSkill -= AutoGrantShield;
+            PlayerStats.Instance.OnMaxManaSkill -= MaxManaSkill;
         }
+    }
+
+    private void MaxManaSkill()
+    {
+        PlayerStats.Instance.Heal(maxManaHealAmount);
+        PlayerStats.Instance.AddShield(maxManaShieldAmount);
+        SpawnProjectile(GetFacingDirection(), maxManaProjectileDamage);
     }
 
     public void UseSkill(InputAction.CallbackContext context)
