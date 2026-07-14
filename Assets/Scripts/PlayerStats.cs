@@ -149,4 +149,14 @@ public class PlayerStats : MonoBehaviour
         currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
         Debug.Log("Health: " + currentHealth);
     }
+
+    public int returnHealth()
+    {
+        return currentHealth;
+    }
+
+    public int returnMaxHealth()
+    {
+        return maxHealth;
+    }
 }

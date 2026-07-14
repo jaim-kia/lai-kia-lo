@@ -68,8 +68,6 @@ public class PlayerSkillManager : MonoBehaviour
         Debug.Log("No skill mana ready");
     }
 
-    // ---------------- Manual ----------------
-
     private void ManualFireProjectile()
     {
         SpawnProjectile(GetFacingDirection(), null); // use projectile's default damage
@@ -79,8 +77,6 @@ public class PlayerSkillManager : MonoBehaviour
     {
         PlayerStats.Instance.AddShield(shieldAmount);
     }
-
-    // ---------------- Auto ----------------
 
     private void AutoFireProjectile()
     {
@@ -93,8 +89,6 @@ public class PlayerSkillManager : MonoBehaviour
         PlayerStats.Instance.AddShield(autoShieldAmount);
         PlayerController.Instance.ApplySlow(autoShieldSlowMultiplier, autoShieldSlowDuration);
     }
-
-    // ---------------- Shared helper ----------------
 
     private Vector3 GetFacingDirection()
     {

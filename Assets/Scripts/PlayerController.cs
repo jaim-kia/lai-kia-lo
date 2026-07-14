@@ -85,7 +85,7 @@ public class PlayerController : MonoBehaviour
 
     public void ApplySlow(float slowMultiplier, float duration)
     {
-        if (isSlowed) return; // avoid stacking if triggered again mid-slow
+        if (isSlowed) return;
         StartCoroutine(SlowRoutine(slowMultiplier, duration));
     }
 
@@ -155,7 +155,7 @@ public class PlayerController : MonoBehaviour
             wallJumpLockCounter = wallJumpLockTime;
 
             jumpBufferCounter = 0f;
-            jumpCut = false;        // disable jumpcutting on walls
+            jumpCut = false;
             doubleJumped = false;   
         }
         else if (wantsToJump && canAirJump)
@@ -177,7 +177,7 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        // Setting Player Linear Velocity
+        // Final settings:
         float finalHorizontal;
         if (wallJumpLockCounter > 0f)
             finalHorizontal = wallJumpDir * (wallJumpForceX / speed); 
