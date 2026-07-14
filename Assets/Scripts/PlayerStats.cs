@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class PlayerStats : MonoBehaviour
@@ -6,11 +7,22 @@ public class PlayerStats : MonoBehaviour
     [SerializeField] private int maxHealth = 5;
     private int currentHealth;
 
-    [Header("Mana")]
-    [SerializeField] private int maxMana = 100;
-    private int currentMana;
+    [Header("Shield")]
+    [SerializeField] private int maxShield = 5;
+    private int currentShield;
+
+    [Header("Combined Mana")]
+    [SerializeField] private int maxTotalMana;
+    [SerializeField] private int manualTriggerThreshold;
+    [SerializeField] private int autoTriggerThreshold;
+
+    private int attackMana;
+    private int dashMana;
 
     public static PlayerStats Instance;
+
+    public event Action OnAutoAttackSkill;
+    public event Action OnAutoDashSkill;
 
     private void Awake()
     {
@@ -20,36 +32,104 @@ public class PlayerStats : MonoBehaviour
             Instance = this;
 
         currentHealth = maxHealth;
-        currentMana = 0;
+        currentShield = 0;
+        attackMana = 0;
+        dashMana = 0;
     }
+
+    // ---------------- Health / Shield ----------------
 
     public void TakeDamage(int amount)
     {
+        int remaining = amount;
+
+        if (currentShield > 0)
+        {
+            int absorbed = Mathf.Min(currentShield, remaining);
+            currentShield -= absorbed;
+            remaining -= absorbed;
+            Debug.Log("Shield absorbed: " + absorbed + ", Shield left: " + currentShield);
+        }
+
+        if (remaining > 0)
+        {
+            currentHealth -= remaining;
+            Debug.Log("Health: " + currentHealth);
+
+            if (currentHealth <= 0)
+                Die();
+        }
+    }
+
+    public void PayHealthCost(int amount)
+    {
         currentHealth -= amount;
-        Debug.Log(currentHealth);
+        Debug.Log("Health (self cost): " + currentHealth);
 
         if (currentHealth <= 0)
             Die();
     }
 
+    public void AddShield(int amount)
+    {
+        currentShield = Mathf.Min(currentShield + amount, maxShield);
+        Debug.Log("Shield: " + currentShield);
+    }
+
     private void Die()
     {
         Debug.Log("Player died");
-        // handle death go jaim lol
     }
 
-    public void AddMana(int amount)
+    // ---------------- Mana ----------------
+
+    public void AddAttackMana(int amount)
     {
-        currentMana = Mathf.Min(currentMana + amount, maxMana);
-        Debug.Log("Mana: " + currentMana);
+        int allowed = Mathf.Min(amount, maxTotalMana - (attackMana + dashMana));
+        attackMana += allowed;
+        Debug.Log("Attack Mana: " + attackMana + " / Dash Mana: " + dashMana);
+
+        CheckAutoTrigger();
     }
 
-    public bool TrySpendMana(int amount)
+    public void AddDashMana(int amount)
     {
-        if (currentMana < amount) return false;
+        int allowed = Mathf.Min(amount, maxTotalMana - (attackMana + dashMana));
+        dashMana += allowed;
+        Debug.Log("Attack Mana: " + attackMana + " / Dash Mana: " + dashMana);
 
-        currentMana -= amount;
-        Debug.Log("Mana: " + currentMana);
+        CheckAutoTrigger();
+    }
+
+    private void CheckAutoTrigger()
+    {
+        if (attackMana >= autoTriggerThreshold)
+        {
+            attackMana = 0;
+            dashMana = 0;
+            OnAutoAttackSkill?.Invoke();
+        }
+        else if (dashMana >= autoTriggerThreshold)
+        {
+            attackMana = 0;
+            dashMana = 0;
+            OnAutoDashSkill?.Invoke();
+        }
+    }
+
+    public bool TryManualAttackSkill()
+    {
+        if (attackMana < manualTriggerThreshold) return false;
+
+        attackMana -= manualTriggerThreshold;
+        return true;
+    }
+
+    public bool TryManualDashSkill()
+    {
+        if (dashMana < manualTriggerThreshold) return false;
+
+        dashMana -= manualTriggerThreshold;
         return true;
     }
 }

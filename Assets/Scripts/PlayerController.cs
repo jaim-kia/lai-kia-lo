@@ -62,8 +62,15 @@ public class PlayerController : MonoBehaviour
     private bool isDashing;
     private Vector3 dashVelocity;
 
+    [Header("Dash Through Enemies")]
+    [SerializeField] private LayerMask enemyLayer;
+    [SerializeField] private Vector3 dashCheckSize = new Vector3(1f, 1f, 1f);
+    [SerializeField] private int dashManaOnPassThrough = 1;
+
     [SerializeField] float sprintSpeedMultiplier = 1.5f;
     private float baseSpeed;
+
+    private bool isSlowed;
 
     private void Awake()
     {
@@ -74,6 +81,23 @@ public class PlayerController : MonoBehaviour
             Destroy(gameObject);
         else
             Instance = this;
+    }
+
+    public void ApplySlow(float slowMultiplier, float duration)
+    {
+        if (isSlowed) return; // avoid stacking if triggered again mid-slow
+        StartCoroutine(SlowRoutine(slowMultiplier, duration));
+    }
+
+    private System.Collections.IEnumerator SlowRoutine(float slowMultiplier, float duration)
+{
+        isSlowed = true;
+        speed = baseSpeed * slowMultiplier;
+
+        yield return new WaitForSeconds(duration);
+
+        speed = baseSpeed;
+        isSlowed = false;
     }
 
     private void FixedUpdate()
@@ -208,9 +232,39 @@ public class PlayerController : MonoBehaviour
         float dir = facingDirection == FacingDirection.Right ? 1f : -1f;
         dashVelocity = new Vector3(dir * dashForce, 0f, 0f);
 
-        yield return new WaitForSeconds(dashDuration);
+        int enemyLayerIndex = LayerMaskToLayer(enemyLayer);
+        Physics.IgnoreLayerCollision(gameObject.layer, enemyLayerIndex, true);
 
+        bool dashedThroughEnemy = false;
+        float elapsed = 0f;
+
+        while (elapsed < dashDuration)
+        {
+            Collider[] hits = Physics.OverlapBox(transform.position, dashCheckSize / 2f, transform.rotation, enemyLayer);
+            if (hits.Length > 0)
+                dashedThroughEnemy = true;
+
+            elapsed += Time.fixedDeltaTime;
+            yield return new WaitForFixedUpdate();
+        }
+
+        Physics.IgnoreLayerCollision(gameObject.layer, enemyLayerIndex, false);
         isDashing = false;
+
+        if (dashedThroughEnemy)
+            PlayerStats.Instance.AddDashMana(dashManaOnPassThrough);
+    }
+
+    private int LayerMaskToLayer(LayerMask mask)
+    {
+        int layerNumber = 0;
+        int layer = mask.value;
+        while (layer > 1)
+        {
+            layer >>= 1;
+            layerNumber++;
+        }
+        return layerNumber;
     }
 
     public void ResetDash()

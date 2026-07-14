@@ -3,17 +3,21 @@ using UnityEngine;
 public class PlayerProjectile : MonoBehaviour
 {
     [SerializeField] private float speed = 15f;
-    [SerializeField] private int damage = 3;
+    [SerializeField] private int damage = 2;
     [SerializeField] private float lifetime = 3f;
     [SerializeField] private LayerMask wallLayer;
     [SerializeField] private LayerMask targetLayer;
 
     private Vector3 direction;
 
-    public void Init(Vector3 travelDirection)
+    public void Init(Vector3 travelDirection, int? damageOverride = null)
     {
         direction = travelDirection.normalized;
-        Destroy(gameObject, lifetime); // safety net in case it never hits anything
+        if (damageOverride.HasValue)
+            damage = damageOverride.Value;
+
+        Debug.Log("Proj Damage: " + damage);
+        Destroy(gameObject, lifetime);
     }
 
     private void Update()
