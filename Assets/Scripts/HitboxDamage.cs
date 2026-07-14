@@ -2,7 +2,8 @@ using UnityEngine;
 
 public class HitboxDamage : MonoBehaviour
 {
-    [SerializeField] int damage = 10;
+    [SerializeField] int damage = 1;
+    [SerializeField] int manaOnHit = 10;
     [SerializeField] LayerMask targetLayer;
 
     private void OnTriggerEnter(Collider other)
@@ -10,7 +11,10 @@ public class HitboxDamage : MonoBehaviour
         if ((targetLayer.value & (1 << other.gameObject.layer)) == 0) return;
 
         if (other.TryGetComponent<IDamageable>(out var damageable))
+        {
             damageable.TakeDamage(damage);
+            PlayerStats.Instance.AddMana(manaOnHit);
+        }
     }
 
     private void OnDrawGizmos()
