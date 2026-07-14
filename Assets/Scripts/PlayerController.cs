@@ -195,11 +195,14 @@ public class PlayerController : MonoBehaviour
 
     public void Move(InputAction.CallbackContext context)
     {
+        if (GameManager.Instance.State != GameState.Overworld) return;
         horizontal = context.ReadValue<Vector2>().x;
     }
 
     public void Jump(InputAction.CallbackContext context)
     {
+        if (GameManager.Instance.State != GameState.Overworld) return;
+
         if (context.performed)
             jumpBufferCounter = jumpBufferTime;
         else if (context.canceled)

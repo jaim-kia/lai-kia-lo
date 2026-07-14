@@ -24,6 +24,8 @@ public class PlayerAttack : MonoBehaviour
 
     public void Attack(InputAction.CallbackContext context)
     {
+        if (GameManager.Instance.State != GameState.Overworld) return;
+
         if (!context.performed) return;
 
         var facing = PlayerController.Instance.Facing;

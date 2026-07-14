@@ -51,6 +51,8 @@ public class PlayerSkillManager : MonoBehaviour
 
     public void UseSkill(InputAction.CallbackContext context)
     {
+        if (GameManager.Instance.State != GameState.Overworld) return;
+
         if (!context.performed) return;
 
         if (PlayerStats.Instance.TryManualAttackSkill())

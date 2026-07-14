@@ -24,6 +24,8 @@ public class PlayerDash : MonoBehaviour
 
     public void Dash(InputAction.CallbackContext context)
     {
+        if (GameManager.Instance.State != GameState.Overworld) return;
+
         switch (context.phase)
         {
             case InputActionPhase.Started:
