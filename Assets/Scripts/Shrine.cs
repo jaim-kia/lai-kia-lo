@@ -14,6 +14,7 @@ public class Shrine : MonoBehaviour
     [SerializeField] private GameObject benchPrefab;
     [SerializeField] private Transform benchSpawnPoint;
 
+
     private void Start()
     {
         player = PlayerController.Instance.transform;
@@ -33,6 +34,7 @@ public class Shrine : MonoBehaviour
 
         if (GameManager.Instance.State == GameState.Overworld)
         {
+            Debug.Log("RAH");
             StartDialogue();
         }
     }

@@ -72,6 +72,8 @@ public class PlayerController : MonoBehaviour
 
     private bool isSlowed;
 
+    private FacingDirection previousDirection;
+
     private void Awake()
     {
         baseSpeed = speed;
@@ -183,12 +185,29 @@ public class PlayerController : MonoBehaviour
             finalHorizontal = wallJumpDir * (wallJumpForceX / speed); 
         else
             finalHorizontal = horizontal;
-        
+
+        previousDirection = facingDirection;
+
         if (finalHorizontal > 0f)
             facingDirection = FacingDirection.Right;
         else if (finalHorizontal < 0)
             facingDirection = FacingDirection.Left;
 
+
+        if (previousDirection != facingDirection)
+        {
+            Mesh mesh = GetComponent<MeshFilter>().mesh;
+            Vector2[] uvs = mesh.uv;
+
+            for (int i = 0; i < uvs.Length; i++)
+            {
+                uvs[i].x = 1 - uvs[i].x;
+            }
+
+            mesh.uv = uvs;
+        }
+
+        
         if (Mathf.Approximately(CameraMoveValue, 0f))
             rb.linearVelocity = new Vector3(finalHorizontal * speed, verticalVelocity, 0);
     }
