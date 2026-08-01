@@ -22,11 +22,15 @@ public class PlayerStats : MonoBehaviour
     [Header("Respawn")]
     [SerializeField] private Vector3 spawnPoint;
 
+    [SerializeField] private UISkill uiSkill;
+
     public int IncenseSticks => incenseSticks;
     public int MaxHealth => maxHealth;
 
     private int attackMana;
     private int dashMana;
+    private int pre_atkMana;
+    private int pre_dashMana;
 
     public static PlayerStats Instance;
 
@@ -111,8 +115,11 @@ public class PlayerStats : MonoBehaviour
     public void AddAttackMana(int amount)
     {
         int allowed = Mathf.Min(amount, maxTotalMana - (attackMana + dashMana));
+        pre_atkMana = attackMana;
         attackMana += allowed;
         Debug.Log("Attack Mana: " + attackMana + " / Dash Mana: " + dashMana);
+
+        uiSkill.UpdateSkill(dashMana, attackMana, dashMana, pre_atkMana);
 
         CheckAutoTrigger();
     }
@@ -120,8 +127,11 @@ public class PlayerStats : MonoBehaviour
     public void AddDashMana(int amount)
     {
         int allowed = Mathf.Min(amount, maxTotalMana - (attackMana + dashMana));
+        pre_dashMana = dashMana;
         dashMana += allowed;
         Debug.Log("Attack Mana: " + attackMana + " / Dash Mana: " + dashMana);
+
+        uiSkill.UpdateSkill(dashMana, attackMana, pre_dashMana, attackMana);
 
         CheckAutoTrigger();
     }
@@ -130,33 +140,45 @@ public class PlayerStats : MonoBehaviour
     {
         if (attackMana >= autoTriggerThreshold)
         {
+            pre_atkMana = attackMana;
+            pre_dashMana = dashMana;
             attackMana = 0;
             dashMana = 0;
             OnAutoAttackSkill?.Invoke();
+            uiSkill.UpdateSkill(dashMana, attackMana, pre_dashMana, pre_atkMana);
             return;
         }
 
         if (dashMana >= autoTriggerThreshold)
         {
+            pre_atkMana = attackMana;
+            pre_dashMana = dashMana;
             attackMana = 0;
             dashMana = 0;
             OnAutoDashSkill?.Invoke();
+            uiSkill.UpdateSkill(dashMana, attackMana, pre_dashMana, pre_atkMana);
             return;
         }
 
         if (attackMana + dashMana >= maxTotalMana)
         {
+            pre_atkMana = attackMana;
+            pre_dashMana = dashMana;
             attackMana = 0;
             dashMana = 0;
             OnMaxManaSkill?.Invoke();
+            uiSkill.UpdateSkill(dashMana, attackMana, pre_dashMana, pre_atkMana);
         }
+
     }
 
     public bool TryManualAttackSkill()
     {
         if (attackMana < manualTriggerThreshold) return false;
 
+        pre_atkMana = attackMana;
         attackMana -= manualTriggerThreshold;
+        uiSkill.UpdateSkill(dashMana, attackMana, dashMana, pre_atkMana);
         return true;
     }
 
@@ -164,7 +186,9 @@ public class PlayerStats : MonoBehaviour
     {
         if (dashMana < manualTriggerThreshold) return false;
 
+        pre_atkMana = attackMana;
         dashMana -= manualTriggerThreshold;
+        uiSkill.UpdateSkill(dashMana, attackMana, pre_dashMana, attackMana);
         return true;
     }
 
