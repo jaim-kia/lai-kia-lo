@@ -3,6 +3,9 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
+    private SpriteRenderer spriteRenderer;
+    [SerializeField] private Animator animator;
+
     [Header("Player Component References")]
     [SerializeField] Rigidbody rb;
     [SerializeField] Vector3 grav;
@@ -76,6 +79,7 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
+        spriteRenderer = GetComponent<SpriteRenderer>();
         baseSpeed = speed;
         Physics.gravity = grav;
 
@@ -188,23 +192,22 @@ public class PlayerController : MonoBehaviour
 
         previousDirection = facingDirection;
 
-        if (finalHorizontal > 0f)
-            facingDirection = FacingDirection.Right;
-        else if (finalHorizontal < 0)
-            facingDirection = FacingDirection.Left;
-
-
-        if (previousDirection != facingDirection)
+        if (grounded && finalHorizontal != 0)
         {
-            Mesh mesh = GetComponent<MeshFilter>().mesh;
-            Vector2[] uvs = mesh.uv;
+            animator.SetBool("isRunning", true);
+        } else {
+            animator.SetBool("isRunning", false);
+        }
 
-            for (int i = 0; i < uvs.Length; i++)
-            {
-                uvs[i].x = 1 - uvs[i].x;
-            }
-
-            mesh.uv = uvs;
+        if (finalHorizontal > 0f)
+        {
+            facingDirection = FacingDirection.Right;
+            spriteRenderer.flipX = false;
+        }
+        else if (finalHorizontal < 0)
+        {
+            facingDirection = FacingDirection.Left;    
+            spriteRenderer.flipX = true;
         }
 
         

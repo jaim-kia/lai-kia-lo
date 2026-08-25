@@ -3807,7 +3807,7 @@
     "m_Hidden": false,
     "m_PerRendererData": false,
     "m_customAttributes": [],
-    "m_Value": 0.0,
+    "m_Value": 0.25,
     "m_FloatType": 0,
     "m_LiteralFloatMode": false,
     "m_RangeValues": {
@@ -4065,8 +4065,8 @@
     "m_ObjectId": "189ff1854fe942fcad4eb52716af0f7a",
     "m_Title": "Fish Mask",
     "m_Position": {
-        "x": 40.0,
-        "y": 1039.9998779296875
+        "x": 39.99985885620117,
+        "y": 1040.0001220703125
     }
 }
 
@@ -5065,7 +5065,7 @@
     "m_Hidden": false,
     "m_PerRendererData": false,
     "m_customAttributes": [],
-    "m_Value": 0.5,
+    "m_Value": 1.0,
     "m_FloatType": 0,
     "m_LiteralFloatMode": false,
     "m_RangeValues": {
@@ -6623,8 +6623,8 @@
     "m_ObjectId": "402b69e292ae4aa9979e3bfee47f1548",
     "m_Title": "Final Assembly",
     "m_Position": {
-        "x": 1746.999755859375,
-        "y": 736.0
+        "x": 1747.0,
+        "y": 736.0000610351563
     }
 }
 
@@ -7783,8 +7783,8 @@
     "m_ObjectId": "4d7be73b6d2d49b5970ca30a4210db76",
     "m_Title": "Liquid Colors",
     "m_Position": {
-        "x": 386.999755859375,
-        "y": 3750.999755859375
+        "x": 386.99993896484377,
+        "y": 3751.0
     }
 }
 
@@ -8488,8 +8488,8 @@
     "m_ObjectId": "58dd3935c99a49e3842497b21f7c6001",
     "m_Title": "Animated Bubbles",
     "m_Position": {
-        "x": -2725.0,
-        "y": 4109.99951171875
+        "x": -2725.000244140625,
+        "y": 4110.00048828125
     }
 }
 
@@ -14858,8 +14858,8 @@
     "m_ObjectId": "bf2968b076fe4d64b001c6cf3853ea46",
     "m_Title": "Color Masking to Skill Levels",
     "m_Position": {
-        "x": 1245.0,
-        "y": 3732.0
+        "x": 1244.9998779296875,
+        "y": 3731.999755859375
     }
 }
 
@@ -16007,8 +16007,8 @@
     "m_ObjectId": "d51573f2bbe0435b9a3e767e35b7c3bc",
     "m_Title": "Liquid Layer",
     "m_Position": {
-        "x": -1548.9998779296875,
-        "y": 1892.9998779296875
+        "x": -1549.0,
+        "y": 1893.0001220703125
     }
 }
 
@@ -17218,8 +17218,8 @@
     "m_ObjectId": "eb760edf087141e1b3ef0591a41d5919",
     "m_Title": "Outer Mask",
     "m_Position": {
-        "x": 66.999755859375,
-        "y": 661.9998779296875
+        "x": 67.0,
+        "y": 662.0
     }
 }
 
