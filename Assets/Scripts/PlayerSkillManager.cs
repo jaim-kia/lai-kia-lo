@@ -25,6 +25,10 @@ public class PlayerSkillManager : MonoBehaviour
     [SerializeField] private int maxManaShieldAmount = 1;
     [SerializeField] private int maxManaProjectileDamage = 2;
 
+    [Header("Skill Recoil")]
+    [SerializeField] private float skillRecoilForce = 4f;
+    [SerializeField] private float skillRecoilDuration = 0.1f;
+
     private void Start()
     {
         PlayerStats.Instance.OnAutoAttackSkill += AutoFireProjectile;
@@ -104,5 +108,7 @@ public class PlayerSkillManager : MonoBehaviour
 
         GameObject proj = Instantiate(projectilePrefab, spawnPos, Quaternion.identity);
         proj.GetComponent<PlayerProjectile>().Init(direction, damageOverride);
+
+        PlayerController.Instance.ApplyRecoil(-direction, skillRecoilForce, skillRecoilDuration);
     }
 }

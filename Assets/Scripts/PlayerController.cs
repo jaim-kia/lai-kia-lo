@@ -77,6 +77,10 @@ public class PlayerController : MonoBehaviour
 
     private FacingDirection previousDirection;
 
+    [Header("Recoil")]
+    private bool isRecoiling;
+    private Vector3 recoilVelocity;
+
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -89,6 +93,27 @@ public class PlayerController : MonoBehaviour
             Instance = this;
     }
 
+    public void ApplyRecoil(Vector3 direction, float force, float duration)
+    {
+        StopCoroutine(nameof(RecoilRoutine));
+        StartCoroutine(RecoilRoutine(direction, force, duration));
+    }
+
+    private System.Collections.IEnumerator RecoilRoutine(Vector3 direction, float force, float duration)
+    {
+        isRecoiling = true;
+        recoilVelocity = direction.normalized * force;
+
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.fixedDeltaTime;
+            yield return new WaitForFixedUpdate();
+        }
+
+        isRecoiling = false;
+    }
+
     public void ApplySlow(float slowMultiplier, float duration)
     {
         if (isSlowed) return;
@@ -96,7 +121,7 @@ public class PlayerController : MonoBehaviour
     }
 
     private System.Collections.IEnumerator SlowRoutine(float slowMultiplier, float duration)
-{
+    {
         isSlowed = true;
         speed = baseSpeed * slowMultiplier;
 
@@ -180,6 +205,12 @@ public class PlayerController : MonoBehaviour
         if (isDashing)
         {
             rb.linearVelocity = dashVelocity;
+            return;
+        }
+
+        if (isRecoiling)
+        {
+            rb.linearVelocity = new Vector3(recoilVelocity.x, verticalVelocity, 0);
             return;
         }
 

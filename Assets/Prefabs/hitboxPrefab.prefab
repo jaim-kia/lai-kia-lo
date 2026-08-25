@@ -51,6 +51,11 @@ MonoBehaviour:
   targetLayer:
     serializedVersion: 2
     m_Bits: 256
+  wallLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  recoilForce: 6
+  recoilDuration: 0.1
 --- !u!65 &5365565201312147115
 BoxCollider:
   m_ObjectHideFlags: 0
