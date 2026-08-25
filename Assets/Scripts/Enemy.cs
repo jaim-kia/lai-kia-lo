@@ -6,6 +6,11 @@ public class Enemy : MonoBehaviour, IDamageable
     [SerializeField] private int contactDamage = 1;
     private int currentHealth;
 
+    [Header("Knockback")]
+    [SerializeField] private float knockbackHorizontalForce = 5f;
+    [SerializeField] private float knockbackVerticalForce = 4f;
+    [SerializeField] private float knockbackDuration = 0.15f;
+
     private void Awake()
     {
         currentHealth = maxHealth;
@@ -25,6 +30,9 @@ public class Enemy : MonoBehaviour, IDamageable
         if (collision.gameObject.TryGetComponent<PlayerStats>(out var playerStats))
         {
             playerStats.TakeDamage(contactDamage);
+
+            Vector3 knockDir = (collision.transform.position - transform.position).normalized;
+            PlayerController.Instance.ApplyKnockback(knockDir, knockbackHorizontalForce, knockbackVerticalForce, knockbackDuration);
         }
     }
 

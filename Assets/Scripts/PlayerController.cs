@@ -81,6 +81,10 @@ public class PlayerController : MonoBehaviour
     private bool isRecoiling;
     private Vector3 recoilVelocity;
 
+    [Header("Knockback (from enemy hits)")]
+    private bool isKnockedBack;
+    private Vector3 knockbackVelocity;
+
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -91,6 +95,12 @@ public class PlayerController : MonoBehaviour
             Destroy(gameObject);
         else
             Instance = this;
+    }
+
+    public void ApplyKnockback(Vector3 direction, float horizontalForce, float verticalForce, float duration)
+    {
+        StopCoroutine(nameof(KnockbackRoutine));
+        StartCoroutine(KnockbackRoutine(direction, horizontalForce, verticalForce, duration));
     }
 
     public void ApplyRecoil(Vector3 direction, float force, float duration)
@@ -112,6 +122,21 @@ public class PlayerController : MonoBehaviour
         }
 
         isRecoiling = false;
+    }
+
+    private System.Collections.IEnumerator KnockbackRoutine(Vector3 direction, float horizontalForce, float verticalForce, float duration)
+    {
+        isKnockedBack = true;
+        knockbackVelocity = new Vector3(direction.normalized.x * horizontalForce, verticalForce, 0f);
+
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.fixedDeltaTime;
+            yield return new WaitForFixedUpdate();
+        }
+
+        isKnockedBack = false;
     }
 
     public void ApplySlow(float slowMultiplier, float duration)
@@ -205,6 +230,12 @@ public class PlayerController : MonoBehaviour
         if (isDashing)
         {
             rb.linearVelocity = dashVelocity;
+            return;
+        }
+
+        if (isKnockedBack)
+        {
+            rb.linearVelocity = knockbackVelocity;
             return;
         }
 
