@@ -37,6 +37,8 @@ public class PlayerController : MonoBehaviour
     
     public static float CameraMoveValue;
 
+    private float _fallSpeedYDampingChangeThreshold;
+
     [Header("Wall Jump")]
     [SerializeField] Transform wallCheckRight;
     [SerializeField] Transform wallCheckLeft;
@@ -158,6 +160,21 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (rb.linearVelocity.y < CameraManager.instance.FallSpeedYDampingChangeThreshold
+            && !CameraManager.instance.IsLerpingYDamping
+            && !CameraManager.instance.LerpedFromPlayerFalling)
+        {
+            CameraManager.instance.LerpYDamping(true);
+        }
+
+        if (rb.linearVelocity.y >= 0f
+            && !CameraManager.instance.IsLerpingYDamping
+            && CameraManager.instance.LerpedFromPlayerFalling)
+        {
+            CameraManager.instance.LerpedFromPlayerFalling = false;
+            CameraManager.instance.LerpYDamping(false);
+        }
+
         touchingWallRight = Physics.CheckBox(wallCheckRight.position, wallCheckSize / 2f, Quaternion.identity, wallLayer);
         touchingWallLeft = Physics.CheckBox(wallCheckLeft.position, wallCheckSize / 2f, Quaternion.identity, wallLayer);
 
