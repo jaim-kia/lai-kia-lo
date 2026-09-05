@@ -2,39 +2,39 @@ using UnityEngine;
 using Unity.Cinemachine;
 using UnityEditor;
 
-// used for swapping and panning cameras: Reference for Cameras: https://youtu.be/9dzBrLUIF8g?si=Z_xGQRGgRAflGvlJ
-
 public class CameraControlTrigger : MonoBehaviour
 {
     public CustomInspectorObjects customInspectorObjects;
-    private Collider2D _cell;
+    private Collider _cell;
+
     private void Start()
     {
-        _cell = GetComponent<Collider2D>();
+        _cell = GetComponent<Collider>();
     }
-    
-    private void OnTriggerEnter2D(Collider2D collision)
+
+    private void OnTriggerEnter(Collider collision)
     {
         if (collision.CompareTag("Player"))
         {
-            if (CustomInspectorObjects.panCameraOnContact)
+            if (customInspectorObjects.panCameraOnContact)
             {
-                // pan cam
+                CameraManager.instance.PanCameraOnContact(customInspectorObjects.panDistance, customInspectorObjects.panTime, customInspectorObjects.panDirection, false);
             }
         }
     }
 
-    private void OnTriggerExit2D(Collider2D collision)
+    private void OnTriggerExit(Collider collision)
     {
         if (collision.CompareTag("Player"))
         {
-            if (CustomInspectorObjects.panCameraOnContact)
+            if (customInspectorObjects.panCameraOnContact)
             {
-                // pan cam
+                CameraManager.instance.PanCameraOnContact(customInspectorObjects.panDistance, customInspectorObjects.panTime, customInspectorObjects.panDirection, true);
             }
         }
     }
 }
+
 
 [System.Serializable]
 public class CustomInspectorObjects

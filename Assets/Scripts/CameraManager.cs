@@ -18,11 +18,14 @@ public class CameraManager : MonoBehaviour
     public bool LerpedFromPlayerFalling { get; set; }
 
     private Coroutine _lerpYPanCoroutine;
+    private Coroutine _panCameraCoroutine;
 
     private CinemachineCamera _currentCamera;
     private CinemachinePositionComposer _positionComposer;
 
     private float _normYPanAmount;
+
+    private Vector2 _startingTrackedObjectOffset;
 
     private void Awake()
     {
@@ -30,6 +33,7 @@ public class CameraManager : MonoBehaviour
 
         if (_brain == null)
             _brain = Camera.main.GetComponent<CinemachineBrain>();
+    
     }
 
     private void Start()
@@ -56,6 +60,8 @@ public class CameraManager : MonoBehaviour
 
         if (_positionComposer != null)
             _normYPanAmount = _positionComposer.Damping.y;
+        
+        _startingTrackedObjectOffset = _positionComposer.TargetOffset;
     }
 
     public void LerpYDamping(bool isPlayerFalling)
@@ -93,5 +99,57 @@ public class CameraManager : MonoBehaviour
         }
 
         IsLerpingYDamping = false;
+    }
+
+    public void PanCameraOnContact(float panDistance, float panTime, PanDirection panDirection, bool panToStartingPos)
+    {
+        _panCameraCoroutine = StartCoroutine(PanCamera(panDistance, panTime, panDirection, panToStartingPos));
+    }
+
+    private IEnumerator PanCamera(float panDistance, float panTime, PanDirection panDirection, bool panToStartingPos)
+    {
+        Vector2 endPos =  Vector2.zero;
+        Vector2 startingPos = Vector2.zero;
+
+        if(!panToStartingPos)
+        {
+            switch (panDirection)
+            {
+                case PanDirection.Up:
+                    endPos = Vector2.up;
+                    break;
+                case PanDirection.Down:
+                    endPos = Vector2.down;
+                    break;
+                case PanDirection.Left:
+                    endPos = Vector2.right;
+                    break;
+                case PanDirection.Right:
+                    endPos = Vector2.left;
+                    break;
+                default:
+                    break;
+            }
+
+            endPos *= panDistance;
+            startingPos = _startingTrackedObjectOffset;
+            endPos += startingPos;
+        }
+        else
+        {
+            startingPos = _positionComposer.TargetOffset;
+            endPos = _startingTrackedObjectOffset;
+        }
+
+        float elapsedTime = 0f;
+        while(elapsedTime < panTime)
+        {
+            elapsedTime += Time.deltaTime;
+
+            Vector3 panLerp = Vector3.Lerp(startingPos, endPos, (elapsedTime / panTime));
+            _positionComposer.TargetOffset = panLerp;
+
+            yield return null;
+        }
     }
 }
