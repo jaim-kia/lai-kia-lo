@@ -6,6 +6,7 @@ public class CameraControlTrigger : MonoBehaviour
 {
     public CustomInspectorObjects customInspectorObjects;
     private Collider _coll;
+    private bool panning;
 
     private void Start()
     {
@@ -19,6 +20,7 @@ public class CameraControlTrigger : MonoBehaviour
             if (customInspectorObjects.panCameraOnContact)
             {
                 CameraManager.instance.PanCameraOnContact(customInspectorObjects.panDistance, customInspectorObjects.panTime, customInspectorObjects.panDirection, false);
+                CameraFollow.instance.isPanning = true;
             }
         }
     }
@@ -38,9 +40,11 @@ public class CameraControlTrigger : MonoBehaviour
             if (customInspectorObjects.panCameraOnContact)
             {
                 CameraManager.instance.PanCameraOnContact(customInspectorObjects.panDistance, customInspectorObjects.panTime, customInspectorObjects.panDirection, true);
+                CameraFollow.instance.isPanning = false;
             }
         }
     }
+
 }
 
 

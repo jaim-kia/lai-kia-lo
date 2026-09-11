@@ -1550,7 +1550,7 @@ Transform:
   m_GameObject: {fileID: 352086070}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 56, y: 7.4, z: -22}
+  m_LocalPosition: {x: 56, y: 7.4, z: -11}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3287,7 +3287,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1af719e86f0693a4a929362157778a7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraFollow
-  nudgeSmoothTime: 0.3
+  nudgeAmount: 3
+  nudgeSmoothTime: 0.1
 --- !u!1 &898273484
 GameObject:
   m_ObjectHideFlags: 0
@@ -6019,7 +6020,7 @@ Transform:
   m_GameObject: {fileID: 2036451644}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 56, y: 7.4, z: -11}
+  m_LocalPosition: {x: 56, y: 7.4, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
