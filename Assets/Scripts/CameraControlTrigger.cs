@@ -5,11 +5,11 @@ using UnityEditor;
 public class CameraControlTrigger : MonoBehaviour
 {
     public CustomInspectorObjects customInspectorObjects;
-    private Collider _cell;
+    private Collider _coll;
 
     private void Start()
     {
-        _cell = GetComponent<Collider>();
+        _coll = GetComponent<Collider>();
     }
 
     private void OnTriggerEnter(Collider collision)
@@ -27,6 +27,14 @@ public class CameraControlTrigger : MonoBehaviour
     {
         if (collision.CompareTag("Player"))
         {
+
+            Vector2 exitDirection = ((Vector2)collision.transform.position - (Vector2)_coll.bounds.center).normalized;
+
+            if (customInspectorObjects.swapCameras && customInspectorObjects.cameraOnLeft != null && customInspectorObjects.cmaeraOnRight != null)
+            {
+                CameraManager.instance.SwapCamera(customInspectorObjects.cameraOnLeft, customInspectorObjects.cmaeraOnRight, exitDirection);
+            }
+
             if (customInspectorObjects.panCameraOnContact)
             {
                 CameraManager.instance.PanCameraOnContact(customInspectorObjects.panDistance, customInspectorObjects.panTime, customInspectorObjects.panDirection, true);
