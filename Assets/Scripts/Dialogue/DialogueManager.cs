@@ -31,6 +31,7 @@ public class DialogueManager : MonoBehaviour
     private GameObject currentSpeaker;
     private bool isPaused;
     public static event Action<GameObject, string> OnDialogueTag;
+    private bool suppressContinueThisFrame;
 
     private void SetDialogueVisible(bool visible)
     {
@@ -77,10 +78,15 @@ public class DialogueManager : MonoBehaviour
 
     private void Update()
     {
-        if (!dialogueIsPlaying || isPaused)
+        if (!dialogueIsPlaying || isPaused) return;
+
+        if (suppressContinueThisFrame)
         {
+            suppressContinueThisFrame  = false;
             return;
         }
+
+        if (currentStory.currentChoices.Count > 0) return; // let UI Submit -> button OnClick -> MakeChoice handle it instead
 
         if (ContinueDialogue())
         {
@@ -162,6 +168,7 @@ public class DialogueManager : MonoBehaviour
     {
         isPaused = false;
         SetDialogueVisible(true);
+        suppressContinueThisFrame = true;
         ContinueStory();
     }
 
@@ -211,6 +218,7 @@ public class DialogueManager : MonoBehaviour
     public void MakeChoice(int choiceIndex)
     {
         currentStory.ChooseChoiceIndex(choiceIndex);
+        ContinueStory();
     }
 
     // getter setters for ink files
