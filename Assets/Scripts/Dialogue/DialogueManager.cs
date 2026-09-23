@@ -111,19 +111,10 @@ public class DialogueManager : MonoBehaviour
         dialogueIsPlaying = true;
         SetDialogueVisible(true);
 
+        GameManager.Instance.UpdateGameState(GameState.Dialogue);
+
         ContinueStory();
     }
-
-
-    // no delay
-    // private void ExitDialogueMode()
-    // {
-    //     dialogueIsPlaying = false;
-    //     dialoguePanel.SetActive(false);
-    //     dialogueText.text = "";
-    // }
-
-    // IEnumerator version but I should change this into states
 
     private IEnumerator ExitDialogueMode()
     {
@@ -140,6 +131,8 @@ public class DialogueManager : MonoBehaviour
         }
 
         dialogueText.text = "";
+
+        GameManager.Instance.UpdateGameState(GameState.Overworld);
     }
 
 

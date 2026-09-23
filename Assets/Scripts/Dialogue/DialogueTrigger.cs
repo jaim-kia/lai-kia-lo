@@ -37,13 +37,14 @@ public class DialogueTrigger : MonoBehaviour
 
     private void Update()
     {
-        if (playerInRange && !DialogueManager.GetInstance().dialogueIsPlaying)
+        if (playerInRange
+            && !DialogueManager.GetInstance().dialogueIsPlaying
+            && GameManager.Instance.State == GameState.Overworld)
         {
             visualCue.SetActive(true);
             
             if (Interact())
             {
-                // Debug.Log(inkJSON.text);
                 DialogueManager.GetInstance().EnterDialogueMode(inkJSON, gameObject);
             } 
         }
