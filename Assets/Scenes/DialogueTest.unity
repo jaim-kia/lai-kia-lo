@@ -7396,7 +7396,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DialogueTrigger
   visualCue: {fileID: 1255593733}
-  inkJSON: {fileID: 4900000, guid: 95f61fc58a39e11478b506fa3ab90edb, type: 3}
+  inkJSON: {fileID: 4900000, guid: a7dcb9d8473b77b4db49a0482a817ccc, type: 3}
   InteractRef: {fileID: 1781555164194001046, guid: 052faaac586de48259a63d0c4782560b, type: 3}
 --- !u!65 &1357931486
 BoxCollider:
