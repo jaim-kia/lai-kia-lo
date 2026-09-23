@@ -1,78 +1,25 @@
-// ============================================================
-// INCENSE SHRINE SYSTEM
-// ============================================================
-// Player picks a type (red/yellow), picks a quantity via an
-// increment loop, then the offering resolves to success or fail.
-// Stock only decreases on success. Fails are tracked, not ignored.
+VAR chosenType = ""
+VAR chosenAmount = 0
+VAR offeringSuccess = false
 
-VAR red_incense = 5
-VAR yellow_incense = 5
-VAR failed_offerings = 0
-VAR last_offering_type = ""
+The shrine sits quietly, waiting for an offering.
+* [Offer red incense]
+    ~ chosenType = "red"
+    -> ask_amount
+* [Offer yellow incense]
+    ~ chosenType = "yellow"
+    -> ask_amount
+* [Leave]
+    -> END
 
--> shrine
+=== ask_amount ===
+Choose how many sticks to offer. # request_amount
+-> after_amount
 
-=== shrine ===
-The shrine sits quietly, incense sticks waiting to be offered.
-Red: {red_incense}   Yellow: {yellow_incense}
-
-+ [Offer incense] -> pick_type
-+ [Leave the shrine] -> nevermind
-
-
-=== pick_type ===
-Which kind of incense would you like to offer?
-
-+ [Red incense (have {red_incense})] -> pick_amount("red", 1)
-+ [Yellow incense (have {yellow_incense})] -> pick_amount("yellow", 1)
-+ [Never mind] -> nevermind
-
-
-=== pick_amount(type, amount) ===
-{type == "red":
-    You are offering <b>{amount}</b> red incense stick{amount != 1:s}.
+=== after_amount ===
+{ offeringSuccess:
+    The shrine glows warmly as it accepts your { chosenAmount } { chosenType } incense sticks. # unlock_shrine
 - else:
-    You are offering <b>{amount}</b> yellow incense stick{amount != 1:s}.
+    The shrine remains still. Your offering wasn't enough.
 }
-
-+ {amount < 20} [Add one more] -> pick_amount(type, amount + 1)
-+ {amount > 1} [Take one back] -> pick_amount(type, amount - 1)
-+ [Confirm offering] -> resolve_offering(type, amount)
-+ [Cancel] -> nevermind
-
-
-=== resolve_offering(type, amount) ===
-{
-- type == "red" && red_incense >= amount:
-    ~ red_incense -= amount
-    You have successfully offered {amount} red incense stick{amount != 1:s}.
-    You are permitted to rest for the time being.
-    -> success_end
-
-- type == "yellow" && yellow_incense >= amount:
-    ~ yellow_incense -= amount
-    You have successfully offered {amount} yellow incense stick{amount != 1:s}.
-    You are permitted to rest for the time being.
-    -> success_end
-
-- else:
-    ~ failed_offerings += 1
-    ~ last_offering_type = type
-    The shrine remains unmoved. You don't have enough {type} incense.
-    -> fail_end
-}
-
-
-=== success_end ===
--> END
-
-
-=== fail_end ===
-Something feels off about the silence.
-(failed attempts so far: {failed_offerings})
--> END
-
-
-=== nevermind ===
-You decide not to make an offering.
 -> END

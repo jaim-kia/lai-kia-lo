@@ -1,50 +1,51 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class ShrineController : MonoBehaviour
 {
     [SerializeField] private int incenseCost = 3;
-    [SerializeField] private float interactRange = 2f;
     [SerializeField] private GameObject benchPrefab;
     [SerializeField] private Transform benchSpawnPoint;
 
     public bool IsUnlocked { get; private set; }
 
-    private bool playerInRange;
-    private Transform player;
-
-    private void Start()
+    private void OnEnable()
     {
-        player = PlayerController.Instance.transform;
+        DialogueManager.OnDialogueTag += HandleDialogueTag;
     }
 
-    private void Update()
+    private void OnDisable()
     {
-        playerInRange = Vector3.Distance(transform.position, player.position) <= interactRange;
+        DialogueManager.OnDialogueTag -= HandleDialogueTag;
     }
 
-    public void Interact(InputAction.CallbackContext context)
+    private void HandleDialogueTag(GameObject speaker, string tag)
     {
-        if (!context.performed) return;
-        if (!playerInRange) return;
-        if (IsUnlocked) return;
-        if (GameManager.Instance.State != GameState.Overworld) return;
-
-        ShrineOfferingUI.Instance.Open(this, incenseCost);
-    }
-
-    public void TryOffer(int amount)
-    {
-        if (amount < incenseCost)
+        // Debug.Log($"HandleDialogueTag called. speaker={speaker?.name}, this={gameObject.name}, tag=[{tag}]");
+        if (speaker != gameObject) return;
+        // Debug.Log("Speaker matched, checking tag...");
+        if (tag == "request_amount")
         {
-            Debug.Log("Not enough offered.");
-            return;
-        }
+            Debug.Log("Tag matched request_amount - pausing dialogue");
+            string incenseType = (string)DialogueManager.GetInstance().GetStoryVariable("chosenType");
 
-        if (PlayerStats.Instance.TrySpendIncenseSticks(amount))
+            DialogueManager.GetInstance().PauseDialogue();
+            ShrineOfferingUI.Instance.Open(this, incenseType);
+        }
+        else if (tag == "unlock_shrine" && !IsUnlocked)
         {
             IsUnlocked = true;
             Instantiate(benchPrefab, benchSpawnPoint.position, Quaternion.identity);
         }
+    }
+
+    public void OnAmountChosen(string incenseType, int amount)
+    {
+        bool success = amount >= incenseCost && PlayerStats.Instance.TrySpendIncenseSticks(amount);
+
+        var dm = DialogueManager.GetInstance();
+        dm.SetStoryVariable("chosenAmount", amount);
+        dm.SetStoryVariable("offeringSuccess", success);
+
+        dm.ResumeDialogue();
     }
 }

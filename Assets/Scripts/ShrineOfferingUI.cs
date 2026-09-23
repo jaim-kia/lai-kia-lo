@@ -15,32 +15,47 @@ public class ShrineOfferingUI : MonoBehaviour
     [SerializeField] private Button confirmButton;
     [SerializeField] private Button cancelButton;
 
+    [SerializeField] private CanvasGroup offeringCanvasGroup; // on the same object as offeringPanel
+
     private ShrineController currentShrine;
+    private string currentIncenseType;
+
+    private void SetOfferingVisible(bool visible)
+    {
+        offeringCanvasGroup.alpha = visible ? 1f : 0f;
+        offeringCanvasGroup.interactable = visible;
+        offeringCanvasGroup.blocksRaycasts = visible;
+    }
+
 
     private void Awake()
     {
         Instance = this;
-        offeringPanel.SetActive(false);
+        SetOfferingVisible(false);
     }
 
-    public void Open(ShrineController shrine, int incenseCost)
+    public void Open(ShrineController shrine, string incenseType)
     {
         currentShrine = shrine;
+        currentIncenseType = incenseType;
 
         int owned = PlayerStats.Instance.IncenseSticks;
 
         amountSlider.wholeNumbers = true;
-        // amountSlider.minValue = Mathf.Min(incenseCost, owned);
         amountSlider.minValue = 0;
-        amountSlider.maxValue = Mathf.Max(owned, incenseCost);
-        amountSlider.value = amountSlider.minValue;
+        amountSlider.maxValue = owned;
+        amountSlider.value = 0;
 
         UpdateAmountText();
-
-        offeringPanel.SetActive(true);
-        GameManager.Instance.UpdateGameState(GameState.Dialogue);
+        SetOfferingVisible(true);
 
         StartCoroutine(FocusSlider());
+    }
+
+    private void Close()
+    {
+        SetOfferingVisible(false);
+        currentShrine = null;
     }
 
     private IEnumerator FocusSlider()
@@ -48,10 +63,12 @@ public class ShrineOfferingUI : MonoBehaviour
         EventSystem.current.SetSelectedGameObject(null);
         yield return new WaitForEndOfFrame();
         EventSystem.current.SetSelectedGameObject(amountSlider.gameObject);
+        Debug.Log("Selected: " + EventSystem.current.currentSelectedGameObject?.name);
     }
 
     public void OnSliderChanged(float value)
-    {
+    {   
+        Debug.Log("Slider changed to: " + value);
         UpdateAmountText();
     }
 
@@ -63,19 +80,15 @@ public class ShrineOfferingUI : MonoBehaviour
     public void OnConfirmPressed()
     {
         int amount = (int)amountSlider.value;
-        currentShrine.TryOffer(amount);
+        currentShrine.OnAmountChosen(currentIncenseType, amount);
         Close();
     }
 
     public void OnCancelPressed()
     {
+        // treat cancel as offering 0 — story still needs to resume either way
+        currentShrine.OnAmountChosen(currentIncenseType, 0);
         Close();
     }
 
-    private void Close()
-    {
-        offeringPanel.SetActive(false);
-        GameManager.Instance.UpdateGameState(GameState.Overworld);
-        currentShrine = null;
-    }
 }
