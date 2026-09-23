@@ -21,6 +21,7 @@ public class ShrineOfferingUI : MonoBehaviour
     [SerializeField] private Vector2 highlightPadding = new Vector2(10f, 10f); // Extra breathing room around buttons
 
     [SerializeField] private CanvasGroup offeringCanvasGroup; 
+    [SerializeField] private GameObject WhiteBG;
 
     private ShrineController currentShrine;
     private string currentIncenseType;
@@ -30,6 +31,8 @@ public class ShrineOfferingUI : MonoBehaviour
         offeringCanvasGroup.alpha = visible ? 1f : 0f;
         offeringCanvasGroup.interactable = visible;
         offeringCanvasGroup.blocksRaycasts = visible;
+
+        WhiteBG.SetActive(visible);
     }
 
     private void Awake()
