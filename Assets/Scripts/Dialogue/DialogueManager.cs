@@ -14,12 +14,15 @@ public class DialogueManager : MonoBehaviour
     [Header("Dialouge UI")]
     [SerializeField] private GameObject dialoguePanel;
     [SerializeField] private TextMeshProUGUI dialogueText;
+    [SerializeField] private TextMeshProUGUI speakerNameText;
     [SerializeField] private InputActionReference continueRef;
 
     [Header("Choices UI")]
     [SerializeField] private GameObject[] choices;
 
-    [SerializeField] private CanvasGroup dialogueCanvasGroup; // on the same object as dialoguePanel
+    [SerializeField] private CanvasGroup dialogueCanvasGroup;
+    [SerializeField] private GameObject continueIcon;
+    [SerializeField] private GameObject choicesContainer;
     private CanvasGroup[] choicesCanvasGroups;
     private TextMeshProUGUI[] choicesText;
 
@@ -100,6 +103,11 @@ public class DialogueManager : MonoBehaviour
         currentSpeaker = speaker;
         isPaused = false;
 
+        if (speakerNameText != null)
+        {
+            speakerNameText.text = speaker != null ? speaker.name : "";
+        }
+
         dialogueIsPlaying = true;
         SetDialogueVisible(true);
 
@@ -125,6 +133,12 @@ public class DialogueManager : MonoBehaviour
 
         dialogueIsPlaying = false;
         SetDialogueVisible(false);
+        
+        if (continueIcon != null)
+        {
+            continueIcon.SetActive(false);
+        }
+
         dialogueText.text = "";
     }
 
@@ -139,17 +153,23 @@ public class DialogueManager : MonoBehaviour
 
     private void ContinueStory()
     {
-        if  (currentStory.canContinue)
+        if (currentStory.canContinue)
         {
             dialogueText.text = currentStory.Continue();
 
-            foreach  (string tag in currentStory.currentTags)
+            foreach (string tag in currentStory.currentTags)
             {
                 Debug.Log("Tag received: [" + tag + "]");
                 OnDialogueTag?.Invoke(currentSpeaker, tag);
             }
 
             DisplayChoices();
+
+            // Show continue icon if there are no choices for this line
+            if (currentStory.currentChoices.Count == 0 && continueIcon != null)
+            {
+                continueIcon.SetActive(true);
+            }
         }
         else if (currentStory.currentChoices.Count > 0)
         {
@@ -181,13 +201,23 @@ public class DialogueManager : MonoBehaviour
     {
         List<Choice> currentChoices = currentStory.currentChoices;
 
+        // Turn off background image if no choices exist
+        if (choicesContainer != null && choicesContainer.TryGetComponent<UnityEngine.UI.Image>(out var bgImage))
+        {
+            bgImage.enabled = currentChoices.Count > 0;
+        }
+
+        if (continueIcon != null)
+        {
+            continueIcon.SetActive(currentChoices.Count == 0);
+        }
+
         if (currentChoices.Count > choices.Length)
         {
-            Debug.LogError("More choices were given than the UI can support. Number of choices given: " + currentChoices.Count);
+            Debug.LogError("More choices were given than UI can support: " + currentChoices.Count);
         }
 
         int index = 0;
-
         foreach (Choice choice in currentChoices)
         {
             SetChoiceVisible(index, true);
@@ -202,12 +232,16 @@ public class DialogueManager : MonoBehaviour
 
         StartCoroutine(SelectFirstChoice());
     }
-
     private void SetChoiceVisible(int index, bool visible)
     {
-        choicesCanvasGroups[index].alpha = visible ? 1f : 0f;
-        choicesCanvasGroups[index].interactable = visible;
-        choicesCanvasGroups[index].blocksRaycasts = visible;
+        choices[index].SetActive(visible);
+
+        if (visible)
+        {
+            choicesCanvasGroups[index].alpha = 1f;
+            choicesCanvasGroups[index].interactable = true;
+            choicesCanvasGroups[index].blocksRaycasts = true;
+        }
     }
 
 

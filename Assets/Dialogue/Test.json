@@ -1,1 +1,1 @@
-﻿{"inkVersion":21,"root":[["^Hello","\n","^Another line","\n","end",["done",{"#f":5,"#n":"g-0"}],null],"done",{"#f":1}],"listDefs":{}}
+﻿{"inkVersion":21,"root":[["^Hello","\n","^Another line","\n","ev","str","^AKO","/str","/ev",{"*":"0.c-0","flg":20},"ev","str","^IKAW","/str","/ev",{"*":"0.c-1","flg":20},{"c-0":["\n",{"->":"0.g-0"},{"#f":5}],"c-1":["\n","end",{"->":"0.g-0"},{"#f":5}],"g-0":["done",{"#f":5}]}],"done",{"#f":1}],"listDefs":{}}
