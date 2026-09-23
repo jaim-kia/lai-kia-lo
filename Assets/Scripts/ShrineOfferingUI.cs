@@ -80,14 +80,14 @@ public class ShrineOfferingUI : MonoBehaviour
     public void OnConfirmPressed()
     {
         int amount = (int)amountSlider.value;
-        currentShrine.OnAmountChosen(currentIncenseType, amount);
+        currentShrine.OnAmountChosen(currentIncenseType, amount, false);
         Close();
     }
 
     public void OnCancelPressed()
     {
         // treat cancel as offering 0 — story still needs to resume either way
-        currentShrine.OnAmountChosen(currentIncenseType, 0);
+        currentShrine.OnAmountChosen(currentIncenseType, 0, true);
         Close();
     }
 

@@ -151,6 +151,10 @@ public class DialogueManager : MonoBehaviour
 
             DisplayChoices();
         }
+        else if (currentStory.currentChoices.Count > 0)
+        {
+            DisplayChoices();
+        }
         else
         {
             StartCoroutine(ExitDialogueMode());
@@ -166,6 +170,7 @@ public class DialogueManager : MonoBehaviour
 
     public void ResumeDialogue()
     {
+        Debug.Log("called");
         isPaused = false;
         SetDialogueVisible(true);
         suppressContinueThisFrame = true;
@@ -217,6 +222,7 @@ public class DialogueManager : MonoBehaviour
 
     public void MakeChoice(int choiceIndex)
     {
+        suppressContinueThisFrame = true;
         currentStory.ChooseChoiceIndex(choiceIndex);
         ContinueStory();
     }

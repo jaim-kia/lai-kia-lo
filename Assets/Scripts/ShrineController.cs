@@ -3,6 +3,7 @@ using UnityEngine;
 public class ShrineController : MonoBehaviour
 {
     [SerializeField] private int incenseCost = 3;
+    [SerializeField] private string incenseTypeRequired;
     [SerializeField] private GameObject benchPrefab;
     [SerializeField] private Transform benchSpawnPoint;
 
@@ -38,13 +39,30 @@ public class ShrineController : MonoBehaviour
         }
     }
 
-    public void OnAmountChosen(string incenseType, int amount)
+    public void OnAmountChosen(string incenseType, int amount, bool cancel)
     {
-        bool success = amount >= incenseCost && PlayerStats.Instance.TrySpendIncenseSticks(amount);
-
         var dm = DialogueManager.GetInstance();
+        if (cancel)
+        {
+            dm.SetStoryVariable("failType", "other");
+            dm.ResumeDialogue();
+            return;            
+        }
+
+        bool amountReq  = amount >= incenseCost;
+        bool typeReq    = incenseTypeRequired == incenseType;
+        bool success    = (amountReq && typeReq) ? PlayerStats.Instance.TrySpendIncenseSticks(amount, incenseType) : false;
+
         dm.SetStoryVariable("chosenAmount", amount);
         dm.SetStoryVariable("offeringSuccess", success);
+
+        if (!success)
+        {
+            if (!amountReq && typeReq)          dm.SetStoryVariable("failType", "amount");
+            else if (!typeReq && amountReq)     dm.SetStoryVariable("failType", "color");
+            else if (!amountReq && !typeReq)    dm.SetStoryVariable("failType", "both");
+        }
+
 
         dm.ResumeDialogue();
     }

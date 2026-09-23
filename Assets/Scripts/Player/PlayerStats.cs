@@ -17,14 +17,15 @@ public class PlayerStats : MonoBehaviour
     [SerializeField] private int autoTriggerThreshold;
 
     [Header("Currency")]
-    [SerializeField] private int incenseSticks = 3;
+    [SerializeField] private int redIncenseSticks = 100;
+    [SerializeField] private int yellowIncenseSticks = 100;
 
     [Header("Respawn")]
     [SerializeField] private Vector3 spawnPoint;
 
     [SerializeField] private UISkill uiSkill;
 
-    public int IncenseSticks => incenseSticks;
+    public int IncenseSticks => redIncenseSticks;
     public int MaxHealth => maxHealth;
 
     private int attackMana;
@@ -37,6 +38,12 @@ public class PlayerStats : MonoBehaviour
     public event Action OnAutoAttackSkill;
     public event Action OnAutoDashSkill;
     public event Action OnMaxManaSkill;
+
+    public enum incenseType
+    {
+        red,
+        yellow
+    }
 
     private void Awake()
     {
@@ -208,18 +215,27 @@ public class PlayerStats : MonoBehaviour
         return maxHealth;
     }
 
-    public void AddIncenseSticks(int amount)
+    public void AddIncenseSticks(int amount, incenseType type)
     {
-        incenseSticks += amount;
-        Debug.Log("Incense Sticks: " + incenseSticks);
+
+        if (type == incenseType.red) redIncenseSticks += amount;
+        if (type == incenseType.yellow) yellowIncenseSticks += amount;
     }
 
-    public bool TrySpendIncenseSticks(int amount)
+    public bool TrySpendIncenseSticks(int amount, string type)
     {
-        if (incenseSticks < amount) return false;
-
-        incenseSticks -= amount;
-        Debug.Log("Incense Sticks: " + incenseSticks);
-        return true;
+        switch (type)
+        {
+            case "red":
+                if (redIncenseSticks < amount) return false;
+                redIncenseSticks -= amount;
+                return true;
+            case "yellow":
+                if (yellowIncenseSticks < amount) return false;
+                yellowIncenseSticks -= amount;
+                return true;
+            default:
+                return false;
+        }
     }
 }

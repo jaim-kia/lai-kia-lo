@@ -3545,7 +3545,8 @@ MonoBehaviour:
   maxTotalMana: 8
   manualTriggerThreshold: 4
   autoTriggerThreshold: 6
-  incenseSticks: 3
+  redIncenseSticks: 100
+  yellowIncenseSticks: 100
   spawnPoint: {x: 0, y: 0, z: 0}
   uiSkill: {fileID: 102704516}
 --- !u!114 &673596215
@@ -9510,6 +9511,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShrineController
   incenseCost: 3
+  incenseTypeRequired: red
   benchPrefab: {fileID: 269996275484507581, guid: 0de420e914225b74c81b01e29c329436, type: 3}
   benchSpawnPoint: {fileID: 89541127}
 --- !u!65 &2069711641
