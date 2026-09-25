@@ -58,6 +58,7 @@ public class PlayerController : MonoBehaviour
     public enum FacingDirection { Left, Right }
     private FacingDirection facingDirection = FacingDirection.Right;
     public FacingDirection Facing => facingDirection;
+    public Transform GroundCheck => groundCheck;
 
     [Header("Dash")]
     [SerializeField] private float dashForce = 30f;
@@ -247,7 +248,12 @@ public class PlayerController : MonoBehaviour
         if (isDashing)
         {
             rb.linearVelocity = dashVelocity;
+            animator.SetBool("isDashing", true);
             return;
+        }
+        else
+        {
+            
         }
 
         if (isKnockedBack)
@@ -271,11 +277,33 @@ public class PlayerController : MonoBehaviour
 
         previousDirection = facingDirection;
 
-        if (grounded && finalHorizontal != 0)
+        if (!grounded)
         {
-            animator.SetBool("isRunning", true);
-        } else {
-            animator.SetBool("isRunning", false);
+            if (verticalVelocity < 0)
+            {
+                animator.SetBool("isFalling", true);
+                animator.SetBool("isJumping", false);
+            }
+                
+            else if (verticalVelocity > 0)
+            {
+                animator.SetBool("isJumping", true);
+                animator.SetBool("isFalling", false);
+            }
+        }
+        else
+        {
+            animator.SetBool("isFalling", false);
+            animator.SetBool("isJumping", false);
+            
+            if (finalHorizontal != 0)
+            {
+                animator.SetBool("isRunning", true);
+            }
+            else
+            {
+                animator.SetBool("isRunning", false);
+            }
         }
 
         if (finalHorizontal > 0f)
@@ -354,6 +382,7 @@ public class PlayerController : MonoBehaviour
 
         Physics.IgnoreLayerCollision(gameObject.layer, enemyLayerIndex, false);
         isDashing = false;
+        animator.SetBool("isDashing", false);
 
         if (dashedThroughEnemy)
             PlayerStats.Instance.AddDashMana(dashManaOnPassThrough);
