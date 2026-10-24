@@ -35,7 +35,7 @@ public class Bench : MonoBehaviour
         if (!playerInRange) return;
         if (GameManager.Instance.State != GameState.Overworld) return;
 
-        PlayerStats.Instance.SetSpawnPoint(transform.position);
+        PlayerStats.Instance.SetRespawnPoint(GameManager.Instance.CurrentRoom, transform.position);
         PlayerStats.Instance.Heal(PlayerStats.Instance.MaxHealth);
 
         Debug.Log("Rested at bench. Spawn point updated, health restored.");

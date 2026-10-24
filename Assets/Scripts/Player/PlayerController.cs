@@ -88,6 +88,33 @@ public class PlayerController : MonoBehaviour
     private bool isKnockedBack;
     private Vector3 knockbackVelocity;
 
+    [SerializeField] private Transform cameraTarget;
+    public Transform CameraTarget => cameraTarget;
+    private bool frozen;
+
+    public void SetFrozen(bool value)
+    {
+        frozen = value;
+
+        if (value)
+        {
+            horizontal = 0f;
+            rb.linearVelocity = Vector3.zero;
+            rb.isKinematic = true;
+        }
+        else
+        {
+            rb.isKinematic = false;
+        }
+    }
+
+    public void Teleport(Vector3 position)
+    {
+        position.z = transform.position.z;
+        transform.position = position;
+        rb.position = position;
+    }
+
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -161,6 +188,8 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (frozen) return; 
+
         if (rb.linearVelocity.y < CameraManager.instance.FallSpeedYDampingChangeThreshold
             && !CameraManager.instance.IsLerpingYDamping
             && !CameraManager.instance.LerpedFromPlayerFalling)

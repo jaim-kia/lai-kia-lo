@@ -50,6 +50,15 @@ public class CameraManager : MonoBehaviour
         }
     }
 
+    public void ResetForRoomChange()
+    {
+        StopAllCoroutines();
+        IsLerpingYDamping = false;
+        LerpedFromPlayerFalling = false;
+        _currentCamera = null;
+        _positionComposer = null;
+    }
+
     private void RefreshCurrentCamera()
     {
         var live = _brain.ActiveVirtualCamera as CinemachineCamera;
@@ -103,6 +112,8 @@ public class CameraManager : MonoBehaviour
 
     public void PanCameraOnContact(float panDistance, float panTime, PanDirection panDirection, bool panToStartingPos)
     {
+        if (_positionComposer == null) return;
+
         _panCameraCoroutine = StartCoroutine(PanCamera(panDistance, panTime, panDirection, panToStartingPos));
     }
 

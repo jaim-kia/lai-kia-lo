@@ -45,6 +45,24 @@ public class PlayerStats : MonoBehaviour
         yellow
     }
 
+    private string respawnScene;
+    private Vector3 respawnPosition;
+
+    public bool HasRespawnPoint => !string.IsNullOrEmpty(respawnScene);
+
+    public void SetRespawnPoint(string sceneName, Vector3 position)
+    {
+        respawnScene = sceneName;
+        respawnPosition = position;
+    }
+
+    private void Die()
+    {
+        currentHealth = maxHealth;
+        currentShield = 0;
+        GameManager.Instance.TransitionToPosition(respawnScene, respawnPosition);
+    }
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -52,7 +70,7 @@ public class PlayerStats : MonoBehaviour
         else
             Instance = this;
 
-        spawnPoint = transform.position;
+        // spawnPoint = transform.position;
         currentHealth = maxHealth;
         currentShield = 0;
         attackMana = 0;
@@ -98,24 +116,24 @@ public class PlayerStats : MonoBehaviour
         Debug.Log("Shield: " + currentShield);
     }
 
-    public void SetSpawnPoint(Vector3 newSpawnPoint)
-    {
-        spawnPoint = newSpawnPoint;
-        Debug.Log("Spawn point set: " + spawnPoint);
-    }
+    // public void SetSpawnPoint(Vector3 newSpawnPoint)
+    // {
+    //     spawnPoint = newSpawnPoint;
+    //     Debug.Log("Spawn point set: " + spawnPoint);
+    // }
 
 
-    private void Die()
-    {
-        Debug.Log("Player died");
+    // private void Die()
+    // {
+    //     Debug.Log("Player died");
 
-        currentHealth = maxHealth;
-        currentShield = 0;
-        transform.position = spawnPoint;
+    //     currentHealth = maxHealth;
+    //     currentShield = 0;
+    //     transform.position = spawnPoint;
 
-        if (TryGetComponent<Rigidbody>(out var rb))
-            rb.linearVelocity = Vector3.zero;
-    }
+    //     if (TryGetComponent<Rigidbody>(out var rb))
+    //         rb.linearVelocity = Vector3.zero;
+    // }
 
     // ---------------- Mana ----------------
 
