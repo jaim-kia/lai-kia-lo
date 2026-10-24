@@ -29,6 +29,8 @@ public class GameManager : MonoBehaviour
                 break;
             case GameState.Dialogue:
                 break;
+            case GameState.Transition:
+                break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(newState), newState, null);
         }
@@ -40,5 +42,6 @@ public class GameManager : MonoBehaviour
 public enum GameState
 {
     Overworld,
-    Dialogue
+    Dialogue,
+    Transition
 }

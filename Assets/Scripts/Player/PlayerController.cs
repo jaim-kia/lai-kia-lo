@@ -279,21 +279,23 @@ public class PlayerController : MonoBehaviour
 
         if (!grounded)
         {
+            animator.SetBool("isGrounded", false);
             if (verticalVelocity < 0)
             {
-                animator.SetBool("isFalling", true);
+                // animator.SetBool("isFalling", true);
                 animator.SetBool("isJumping", false);
             }
                 
             else if (verticalVelocity > 0)
             {
                 animator.SetBool("isJumping", true);
-                animator.SetBool("isFalling", false);
+                // animator.SetBool("isFalling", false);
             }
         }
         else
         {
-            animator.SetBool("isFalling", false);
+            animator.SetBool("isGrounded", true);
+            // animator.SetBool("isFalling", false);
             animator.SetBool("isJumping", false);
             
             if (finalHorizontal != 0)
