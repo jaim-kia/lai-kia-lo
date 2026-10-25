@@ -11867,6 +11867,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c40652949af7018498fc6ebe31680420, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShrineController
+  shrineId: Room01
   incenseCost: 3
   incenseTypeRequired: red
   benchPrefab: {fileID: 269996275484507581, guid: 0de420e914225b74c81b01e29c329436, type: 3}

@@ -8643,6 +8643,63 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.01, y: 0.0107918065, z: 0.003915836}
   m_Center: {x: 0, y: 0, z: 0.00053847465}
+--- !u!1001 &1529968390
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 3471089998006248419, guid: a353d766edaf21e4bb92aa30e7cf85e6, type: 3}
+      propertyPath: m_Name
+      value: EFloatingChaser
+      objectReference: {fileID: 0}
+    - target: {fileID: 8202611228349960614, guid: a353d766edaf21e4bb92aa30e7cf85e6, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.54
+      objectReference: {fileID: 0}
+    - target: {fileID: 8202611228349960614, guid: a353d766edaf21e4bb92aa30e7cf85e6, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.19
+      objectReference: {fileID: 0}
+    - target: {fileID: 8202611228349960614, guid: a353d766edaf21e4bb92aa30e7cf85e6, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8202611228349960614, guid: a353d766edaf21e4bb92aa30e7cf85e6, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8202611228349960614, guid: a353d766edaf21e4bb92aa30e7cf85e6, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8202611228349960614, guid: a353d766edaf21e4bb92aa30e7cf85e6, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8202611228349960614, guid: a353d766edaf21e4bb92aa30e7cf85e6, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8202611228349960614, guid: a353d766edaf21e4bb92aa30e7cf85e6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8202611228349960614, guid: a353d766edaf21e4bb92aa30e7cf85e6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8202611228349960614, guid: a353d766edaf21e4bb92aa30e7cf85e6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: a353d766edaf21e4bb92aa30e7cf85e6, type: 3}
 --- !u!1 &1535420049
 GameObject:
   m_ObjectHideFlags: 0
@@ -11882,6 +11939,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c40652949af7018498fc6ebe31680420, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShrineController
+  shrineId: Room_02
   incenseCost: 3
   incenseTypeRequired: red
   benchPrefab: {fileID: 269996275484507581, guid: 0de420e914225b74c81b01e29c329436, type: 3}
@@ -12333,3 +12391,4 @@ SceneRoots:
   - {fileID: 441744392}
   - {fileID: 672618442}
   - {fileID: 1730291327}
+  - {fileID: 1529968390}

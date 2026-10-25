@@ -2,6 +2,11 @@ VAR chosenType = ""
 VAR failType = ""
 VAR chosenAmount = 0
 VAR offeringSuccess = false
+VAR alreadyUnlocked = false
+
+{ alreadyUnlocked:
+    -> already_unlocked
+}
 
 The shrine sits quietly, waiting for an offering.
 * [Offer red incense]
@@ -37,6 +42,8 @@ Choose how many sticks to offer. # request_amount
   - else:
         The shrine remains still unmoved by your actions.
 }
+-> END
 
-
+=== already_unlocked ===
+The shrine glows softly. The bench beside it waits for you.
 -> END

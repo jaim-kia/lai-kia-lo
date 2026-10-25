@@ -1,7 +1,10 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class ShrineController : MonoBehaviour
 {
+
+    [SerializeField] private string shrineId = "main"; // unique within this room
     [SerializeField] private int incenseCost = 3;
     [SerializeField] private string incenseTypeRequired;
     [SerializeField] private GameObject benchPrefab;
@@ -9,24 +12,35 @@ public class ShrineController : MonoBehaviour
 
     public bool IsUnlocked { get; private set; }
 
+    private string StateKey => $"shrine:{gameObject.scene.name}:{shrineId}";
+
+    private void Start()
+    {
+        if (WorldState.Instance.Has(StateKey))
+        {
+            IsUnlocked = true;
+            SpawnBench();
+        }
+    }
+
     private void OnEnable()
     {
         DialogueManager.OnDialogueTag += HandleDialogueTag;
+        DialogueManager.OnDialogueStarted += HandleDialogueStarted;
     }
 
     private void OnDisable()
     {
         DialogueManager.OnDialogueTag -= HandleDialogueTag;
+        DialogueManager.OnDialogueStarted -= HandleDialogueStarted;
     }
 
     private void HandleDialogueTag(GameObject speaker, string tag)
     {
-        // Debug.Log($"HandleDialogueTag called. speaker={speaker?.name}, this={gameObject.name}, tag=[{tag}]");
         if (speaker != gameObject) return;
-        // Debug.Log("Speaker matched, checking tag...");
+
         if (tag == "request_amount")
         {
-            Debug.Log("Tag matched request_amount - pausing dialogue");
             string incenseType = (string)DialogueManager.GetInstance().GetStoryVariable("chosenType");
 
             DialogueManager.GetInstance().PauseDialogue();
@@ -35,8 +49,25 @@ public class ShrineController : MonoBehaviour
         else if (tag == "unlock_shrine" && !IsUnlocked)
         {
             IsUnlocked = true;
-            Instantiate(benchPrefab, benchSpawnPoint.position, Quaternion.identity);
+            WorldState.Instance.Set(StateKey); 
+            SpawnBench();
         }
+    }
+
+
+    private void HandleDialogueStarted(GameObject speaker)
+    {
+        if (speaker != gameObject) return;
+
+        DialogueManager.GetInstance().SetStoryVariable("alreadyUnlocked", IsUnlocked);
+    }
+
+    private void SpawnBench()
+    {
+        GameObject bench = Instantiate(benchPrefab, benchSpawnPoint.position, Quaternion.identity);
+
+        // Spawned bench is child of the added scene on top of persistent
+        SceneManager.MoveGameObjectToScene(bench, gameObject.scene);
     }
 
     public void OnAmountChosen(string incenseType, int amount, bool cancel)

@@ -28,6 +28,7 @@ public class DialogueManager : MonoBehaviour
 
     private Story currentStory;
     public bool dialogueIsPlaying {get; private set;}
+    public static event Action<GameObject> OnDialogueStarted;
 
     private static DialogueManager instance;
 
@@ -102,6 +103,8 @@ public class DialogueManager : MonoBehaviour
         currentStory = new Story(inkJSON.text);
         currentSpeaker = speaker;
         isPaused = false;
+
+        OnDialogueStarted?.Invoke(speaker);
 
         if (speakerNameText != null)
         {
