@@ -59,6 +59,7 @@ public class PlayerController : MonoBehaviour
     private FacingDirection facingDirection = FacingDirection.Right;
     public FacingDirection Facing => facingDirection;
     public Transform GroundCheck => groundCheck;
+    public bool IsGrounded => grounded;
 
     [Header("Dash")]
     [SerializeField] private float dashForce = 30f;
@@ -91,6 +92,25 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform cameraTarget;
     public Transform CameraTarget => cameraTarget;
     private bool frozen;
+    private float heldHorizontal;
+
+    private void OnEnable()
+    {
+        GameManager.OnGameStateChanged += HandleStateChanged;
+    }
+
+    private void OnDisable()
+    {
+        GameManager.OnGameStateChanged -= HandleStateChanged;
+    }
+
+    private void HandleStateChanged(GameState state)
+    {
+        horizontal = state == GameState.Overworld ? heldHorizontal : 0f;
+
+        if (state != GameState.Overworld)
+            rb.linearVelocity = new Vector3(0f, rb.linearVelocity.y, 0f);
+    }
 
     public void SetFrozen(bool value)
     {
@@ -356,7 +376,8 @@ public class PlayerController : MonoBehaviour
     public void Move(InputAction.CallbackContext context)
     {
         if (GameManager.Instance.State != GameState.Overworld) return;
-        horizontal = context.ReadValue<Vector2>().x;
+        heldHorizontal = context.ReadValue<Vector2>().x;
+        horizontal = GameManager.Instance.State == GameState.Overworld ? heldHorizontal : 0f;
     }
 
     public void Jump(InputAction.CallbackContext context)

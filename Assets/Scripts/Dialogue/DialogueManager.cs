@@ -37,6 +37,17 @@ public class DialogueManager : MonoBehaviour
     public static event Action<GameObject, string> OnDialogueTag;
     private bool suppressContinueThisFrame;
 
+    private bool worldFrozen;
+
+    private void OnDisable()
+    {
+        if (worldFrozen)
+        {
+            worldFrozen = false;
+            Time.timeScale = 1f;
+        }
+    }
+
     private void SetDialogueVisible(bool visible)
     {
         dialogueCanvasGroup.alpha = visible ? 1f : 0f;
@@ -98,7 +109,8 @@ public class DialogueManager : MonoBehaviour
         }
     }
 
-    public void EnterDialogueMode(TextAsset inkJSON, GameObject speaker = null)
+    public void EnterDialogueMode(TextAsset inkJSON, GameObject speaker = null,
+                                string speakerLabel = null, bool freezeWorld = false)
     {
         currentStory = new Story(inkJSON.text);
         currentSpeaker = speaker;
@@ -107,12 +119,16 @@ public class DialogueManager : MonoBehaviour
         OnDialogueStarted?.Invoke(speaker);
 
         if (speakerNameText != null)
-        {
-            speakerNameText.text = speaker != null ? speaker.name : "";
-        }
+            speakerNameText.text = speakerLabel ?? (speaker != null ? speaker.name : "");
 
         dialogueIsPlaying = true;
         SetDialogueVisible(true);
+
+        if (freezeWorld)
+        {
+            worldFrozen = true;
+            Time.timeScale = 0f;
+        }
 
         GameManager.Instance.UpdateGameState(GameState.Dialogue);
 
@@ -121,19 +137,23 @@ public class DialogueManager : MonoBehaviour
 
     private IEnumerator ExitDialogueMode()
     {
-        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSecondsRealtime(0.2f);
 
         EventSystem.current.SetSelectedGameObject(null);
 
         dialogueIsPlaying = false;
         SetDialogueVisible(false);
-        
+
         if (continueIcon != null)
-        {
             continueIcon.SetActive(false);
-        }
 
         dialogueText.text = "";
+
+        if (worldFrozen)
+        {
+            worldFrozen = false;
+            Time.timeScale = 1f;
+        }
 
         GameManager.Instance.UpdateGameState(GameState.Overworld);
     }
