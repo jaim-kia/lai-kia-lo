@@ -3,7 +3,12 @@ using UnityEngine.InputSystem;
 
 public class TapePickup : MonoBehaviour
 {
-    [SerializeField] private string tapeId = "tape_01"; // unique across the whole game
+    [SerializeField] private ItemData item;
+    [SerializeField] private int amount = 1;
+    [SerializeField] private string pickupId = "pickup_01"; // unique within this room
+    [SerializeField] private bool requireInteract = true;    // turn off for coins you walk into
+
+    [Header("Tape Info")]
     [SerializeField] private TextAsset inkJSON;
     [SerializeField] private string speakerLabel = "Cassette Tape";
 
@@ -15,7 +20,7 @@ public class TapePickup : MonoBehaviour
     private bool playerInRange;
     private bool collected;
 
-    private string StateKey => $"tape:{tapeId}";
+    private string StateKey => $"pickup:{gameObject.scene.name}:{pickupId}";
 
     private void Start()
     {
@@ -54,16 +59,28 @@ public class TapePickup : MonoBehaviour
 
         if (visualCue != null) visualCue.SetActive(canInteract);
 
-        if (canInteract && interactRef != null && interactRef.action.WasPressedThisFrame())
+        if (canInteract && (!requireInteract || (interactRef != null && interactRef.action.WasPressedThisFrame())))
             Collect();
     }
 
     private void Collect()
     {
+        Debug.Log($"Collect: item={item?.name}, type={item?.GetType().Name}");
+
+        if (!Inventory.Instance.Add(item, amount))
+        {
+            Debug.Log("Add returned false (already owned or stack full)");
+            return;
+        }
+
         collected = true;
         WorldState.Instance.Set(StateKey);
 
-        DialogueManager.GetInstance().EnterDialogueMode(inkJSON, gameObject, speakerLabel, freezeWorld: true);
+        Debug.Log($"Added. isTape={item is TapeData}, ink={(item as TapeData)?.inkJSON}");
+
+        if (item is TapeData tape && tape.inkJSON != null)
+            DialogueManager.GetInstance().EnterDialogueMode(tape.inkJSON, gameObject, tape.speakerLabel, freezeWorld: true);
+
         Destroy(gameObject);
     }
 }

@@ -3,7 +3,17 @@ guid: f47fb8236090d524783790ba59f5d7fb
 ModelImporter:
   serializedVersion: 24501
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: 1-FloorColor
+    second: {fileID: 2800000, guid: 6b9e2705a7fd76e4e8372476228c8fdc, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: 1-FloorRoughness
+    second: {fileID: 2800000, guid: 65f713c31e96a01488ba461476866675, type: 3}
   materials:
     materialImportMode: 2
     materialName: 0

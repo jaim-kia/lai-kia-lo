@@ -82,7 +82,8 @@ public class ShrineController : MonoBehaviour
 
         bool amountReq  = amount >= incenseCost;
         bool typeReq    = incenseTypeRequired == incenseType;
-        bool success    = (amountReq && typeReq) ? PlayerStats.Instance.TrySpendIncenseSticks(amount, incenseType) : false;
+        ItemData incense = Inventory.Instance.GetItem("incense_" + incenseType);
+        bool success = amountReq && typeReq && incense != null && Inventory.Instance.TryRemove(incense, amount);
 
         dm.SetStoryVariable("chosenAmount", amount);
         dm.SetStoryVariable("offeringSuccess", success);

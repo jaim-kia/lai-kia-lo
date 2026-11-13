@@ -77,7 +77,8 @@ public class ShrineOfferingUI : MonoBehaviour
         currentShrine = shrine;
         currentIncenseType = incenseType;
 
-        int owned = PlayerStats.Instance.IncenseSticks;
+        ItemData incense = Inventory.Instance.GetItem("incense_" + incenseType);
+        int owned = incense != null ? Inventory.Instance.Count(incense) : 0;
 
         amountSlider.wholeNumbers = true;
         amountSlider.minValue = 0;
