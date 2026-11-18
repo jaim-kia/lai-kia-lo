@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
 using Unity.Cinemachine;
@@ -12,6 +13,7 @@ public class CameraManager : MonoBehaviour
     [Header("Controls for lerping the Y Damping during player jump/fall")]
     [SerializeField] private float _fallPanAmount = 0.25f;
     [SerializeField] private float _fallYPanTime = 0.35f;
+    [SerializeField] private float swapBlendTime = 0.8f;
     public float FallSpeedYDampingChangeThreshold = -15f;
 
     public bool IsLerpingYDamping { get; private set; }
@@ -26,6 +28,30 @@ public class CameraManager : MonoBehaviour
     private float _normYPanAmount;
 
     private Vector2 _startingTrackedObjectOffset;
+    private readonly List<CinemachineCamera> roomCameras = new List<CinemachineCamera>();
+
+    // instant: used while a room is loading
+    public void SetCutBlend()
+    {
+        _brain.DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Styles.Cut, 0f);
+    }
+
+    // smooth: used for camera swaps inside a room
+    public void EnableSmoothSwaps()
+    {
+        _brain.DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Styles.EaseInOut, swapBlendTime);
+    }
+
+    public void Register(CinemachineCamera cam)
+    {
+        if (!roomCameras.Contains(cam)) roomCameras.Add(cam);
+    }
+
+    public void Unregister(CinemachineCamera cam)
+    {
+        roomCameras.Remove(cam);
+    }
+
 
     private void Awake()
     {
@@ -52,6 +78,7 @@ public class CameraManager : MonoBehaviour
 
     public void ResetForRoomChange()
     {
+        SetCutBlend();
         StopAllCoroutines();
         IsLerpingYDamping = false;
         LerpedFromPlayerFalling = false;
@@ -65,12 +92,14 @@ public class CameraManager : MonoBehaviour
         if (live == null) return;
 
         _currentCamera = live;
-        _positionComposer = _currentCamera.GetComponent<CinemachinePositionComposer>();
+        Debug.Log("Live camera is now: " + live.name);
+        _positionComposer = live.GetComponent<CinemachinePositionComposer>();
 
         if (_positionComposer != null)
+        {
             _normYPanAmount = _positionComposer.Damping.y;
-        
-        _startingTrackedObjectOffset = _positionComposer.TargetOffset;
+            _startingTrackedObjectOffset = _positionComposer.TargetOffset;
+        }
     }
 
     public void LerpYDamping(bool isPlayerFalling)
@@ -164,36 +193,32 @@ public class CameraManager : MonoBehaviour
         }
     }
 
+    private static void SetPriority(CinemachineCamera cam, int value)
+    {
+        var p = cam.Priority;
+        p.Enabled = true;   // without this the value is ignored (treated as 0)
+        p.Value = value;
+        cam.Priority = p;
+    }
+
+    public void ActivateCamera(CinemachineCamera target)
+    {
+        if (target == null) return;
+
+        foreach (var cam in roomCameras)
+        {
+            if (cam == null) continue;
+            SetPriority(cam, cam == target ? 20 : 10);
+        }
+
+        Debug.Log($"Activate '{target.name}': component enabled={target.enabled}, " +
+                $"gameObject active={target.gameObject.activeInHierarchy}, " +
+                $"priority enabled={target.Priority.Enabled}, value={target.Priority.Value}");
+    }
+
     public void SwapCamera(CinemachineCamera cameraFromLeft, CinemachineCamera cameraFromRight, Vector2 triggerExitDirection)
     {
-        if (_currentCamera == cameraFromLeft && triggerExitDirection.x > 0f)
-        {
-            // activate the new camera
-            cameraFromRight.enabled = true;
-
-            // deac the old one
-            cameraFromLeft.enabled = false;
-
-            // set the new cam as current cam
-            _currentCamera = cameraFromRight;
-
-            // update composer variable
-            _positionComposer = _currentCamera.GetComponent<CinemachinePositionComposer>();
-        }
-
-        else if (_currentCamera == cameraFromRight && triggerExitDirection.x < 0f)
-        {
-            // activate the new camera
-            cameraFromLeft.enabled = true;
-
-            // deac the old one
-            cameraFromRight.enabled = false;
-
-            // set the new cam as current cam
-            _currentCamera = cameraFromLeft;
-
-            // update composer variable
-            _positionComposer = _currentCamera.GetComponent<CinemachinePositionComposer>();
-        }
+        // exiting right -> the right camera, otherwise the left one
+        ActivateCamera(triggerExitDirection.x > 0f ? cameraFromRight : cameraFromLeft);
     }
 }

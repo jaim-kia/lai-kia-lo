@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 2247641994793342139}
   - component: {fileID: 5119043038814653456}
   - component: {fileID: 580937384155752271}
+  - component: {fileID: 6157302346743878244}
   m_Layer: 8
   m_Name: EFloatingPatrolPrefab
   m_TagString: Untagged
@@ -177,3 +178,21 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 6.1232336e-17}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &6157302346743878244
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 512427096499512708}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 374bd78440388c5489d766bf1fdacc42, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CoinDropper
+  coinPrefab: {fileID: 5065774735294216074, guid: d0e11a299a1ab4b4b9ca0101edb21f34, type: 3}
+  minCoins: 1
+  maxCoins: 3
+  popHorizontal: 2.5
+  popUpMin: 4
+  popUpMax: 7

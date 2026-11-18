@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 2756114011377544014}
   - component: {fileID: 3517038213212532957}
   - component: {fileID: 3106849178625542187}
+  - component: {fileID: 6183085418153104706}
   m_Layer: 8
   m_Name: EFloatingChaser
   m_TagString: Untagged
@@ -196,3 +197,21 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 6.1232336e-17}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &6183085418153104706
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3471089998006248419}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 374bd78440388c5489d766bf1fdacc42, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CoinDropper
+  coinPrefab: {fileID: 5065774735294216074, guid: d0e11a299a1ab4b4b9ca0101edb21f34, type: 3}
+  minCoins: 1
+  maxCoins: 3
+  popHorizontal: 2.5
+  popUpMin: 4
+  popUpMax: 7

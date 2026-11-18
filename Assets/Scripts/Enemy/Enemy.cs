@@ -22,6 +22,7 @@ public class Enemy : MonoBehaviour, IDamageable
     private IEnemyMovement[] movementBehaviors;
     private Coroutine hitstunCoroutine;
     private Rigidbody rb;
+    private bool dead;
 
     private void Awake()
     {
@@ -32,6 +33,8 @@ public class Enemy : MonoBehaviour, IDamageable
 
     public void TakeDamage(int amount)
     {
+        if (dead) return; // two hitboxes landing in the same frame would otherwise drop coins twice
+
         currentHealth -= amount;
         Debug.Log(currentHealth);
 
@@ -93,6 +96,11 @@ public class Enemy : MonoBehaviour, IDamageable
 
     private void Die()
     {
+        dead = true;
+
+        if (TryGetComponent<CoinDropper>(out var dropper))
+            dropper.Drop();
+        
         Destroy(gameObject);
     }
 }

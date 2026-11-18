@@ -105,6 +105,8 @@ public class GameManager : MonoBehaviour
         yield return null; // give the camera a couple of frames to snap onto the player
         yield return null;
 
+        CameraManager.instance.EnableSmoothSwaps();
+
         PlayerController.Instance.SetFrozen(false);
         yield return StartCoroutine(fader.FadeIn());
 
