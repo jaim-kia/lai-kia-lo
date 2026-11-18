@@ -8,6 +8,8 @@ using UnityEngine.UI;
 
 public class InventoryUI : MonoBehaviour
 {
+    private const int Capacity = 16;
+
     [Header("Input")]
     [SerializeField] private InputActionReference toggleRef;
     [SerializeField] private InputActionReference tabLeftRef;
@@ -19,7 +21,7 @@ public class InventoryUI : MonoBehaviour
     [SerializeField] private InventorySlot slotPrefab;
     [SerializeField] private GameObject emptyLabel;
     [SerializeField] private TMP_Text tabLabel;
-    [SerializeField] private TMP_Text charmSlotsText; // "Slots 1/3", shown on the Charms tab
+    [SerializeField] private TMP_Text charmSlotsText;
     [SerializeField] private TMP_Text statusText;
 
     [Header("Details")]
@@ -36,6 +38,14 @@ public class InventoryUI : MonoBehaviour
 
     private void Awake()
     {
+        // built once and reused: 16 cells, filled or emptied per tab
+        for (int i = 0; i < Capacity; i++)
+        {
+            var slot = Instantiate(slotPrefab, slotContainer);
+            slot.Init(this);
+            slots.Add(slot);
+        }
+
         SetVisible(false);
     }
 
@@ -117,7 +127,7 @@ public class InventoryUI : MonoBehaviour
                 RefreshCharmSlots();
                 break;
 
-            // plain objects are definitions only: selecting shows the description, nothing to do on submit
+            // plain objects are definitions only
         }
     }
 
@@ -132,20 +142,16 @@ public class InventoryUI : MonoBehaviour
 
     private void Rebuild()
     {
-        EventSystem.current.SetSelectedGameObject(null); // never destroy the selected object
+        var items = Inventory.Instance.GetItems(tabs[currentTab]);
 
-        foreach (var s in slots) Destroy(s.gameObject);
-        slots.Clear();
+        if (items.Count > Capacity)
+            Debug.LogWarning($"{tabNames[currentTab]} has {items.Count} items but the grid only shows {Capacity}");
 
-        foreach (var item in Inventory.Instance.GetItems(tabs[currentTab]))
-        {
-            var slot = Instantiate(slotPrefab, slotContainer);
-            slot.Setup(item, this);
-            slots.Add(slot);
-        }
+        for (int i = 0; i < slots.Count; i++)
+            slots[i].SetItem(i < items.Count ? items[i] : null);
 
         tabLabel.text = $"<  {tabNames[currentTab]}  >";
-        emptyLabel.SetActive(slots.Count == 0);
+        if (emptyLabel != null) emptyLabel.SetActive(items.Count == 0);
         SetStatus("");
         RefreshCharmSlots();
     }
@@ -170,7 +176,7 @@ public class InventoryUI : MonoBehaviour
         EventSystem.current.SetSelectedGameObject(null);
         yield return new WaitForEndOfFrame(); // frame-based, so it still runs at timeScale 0
 
-        if (slots.Count > 0)
+        if (slots[0].Item != null)
         {
             EventSystem.current.SetSelectedGameObject(slots[0].gameObject);
         }

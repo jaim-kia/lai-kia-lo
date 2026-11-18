@@ -81,6 +81,17 @@ public class Inventory : MonoBehaviour
         var list = new List<ItemData>();
         foreach (var item in order)
             if (item.Category == category) list.Add(item);
+
+        // objects stay in pickup order; tapes and charms follow their ID number
+        if (category != ItemCategory.Object)
+        {
+            list.Sort((a, b) =>
+            {
+                int c = a.sortId.CompareTo(b.sortId);
+                return c != 0 ? c : string.CompareOrdinal(a.Id, b.Id); // stable tie-break
+            });
+        }
+
         return list;
     }
 

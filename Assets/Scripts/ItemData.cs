@@ -10,6 +10,9 @@ public class ItemData : ScriptableObject
     [TextArea(2, 5)] public string description;
     [SerializeField] private int maxStack = 99; // coins 999, ability items 1
 
+    [Tooltip("Tapes and charms are laid out in ascending order")]
+    public int sortId;
+
     public virtual ItemCategory Category => ItemCategory.Object;
     public virtual int MaxStack => maxStack;
 
