@@ -69,6 +69,14 @@ public class PlayerController : MonoBehaviour
     private bool isDashing;
     private Vector3 dashVelocity;
 
+    [Header("Air Dash")]
+    [SerializeField] private int baseMaxAirDashes = 1;
+    [SerializeField] private CharmData extraAirDashCharm; // optional: equipping it adds one more air dash
+
+    private int airDashesUsed;
+    public int MaxAirDashes =>
+        baseMaxAirDashes + (extraAirDashCharm != null && Inventory.Instance != null && Inventory.Instance.IsEquipped(extraAirDashCharm) ? 1 : 0);
+
     [Header("Dash Through Enemies")]
     [SerializeField] private LayerMask enemyLayer;
     [SerializeField] private Vector3 dashCheckSize = new Vector3(1f, 1f, 1f);
@@ -237,6 +245,7 @@ public class PlayerController : MonoBehaviour
         if (isWallSliding)
         {
             doubleJumped = false;
+            airDashesUsed = 0;
         }
 
         grounded = Physics.CheckBox(groundCheck.position, groundCheckSize / 2f, Quaternion.identity, groundLayer);
@@ -244,6 +253,7 @@ public class PlayerController : MonoBehaviour
         if (grounded) {
             cayoteTimeCounter = cayoteTime;
             doubleJumped = false;
+            airDashesUsed = 0;
         }
         else
             cayoteTimeCounter -= Time.fixedDeltaTime;
@@ -404,6 +414,13 @@ public class PlayerController : MonoBehaviour
     {
         if (!dashReady || isDashing)
             return;
+
+        if (!grounded)
+        {
+            if (airDashesUsed >= MaxAirDashes)
+                return; // out of air dashes: don't consume dashReady either
+            airDashesUsed++;
+        }
 
         dashReady = false;
         StartCoroutine(DoDash());
