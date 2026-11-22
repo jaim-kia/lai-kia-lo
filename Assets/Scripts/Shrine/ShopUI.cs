@@ -26,6 +26,7 @@ public class ShopUI : MonoBehaviour
 
     [Header("Quantity step")]
     [SerializeField] private TMP_Text quantityItemText;
+    [SerializeField] private TMP_Text amountText; // just the number
     [SerializeField] private Slider amountSlider;
     [SerializeField] private TMP_Text totalText;
     [SerializeField] private Button confirmButton;
@@ -35,6 +36,10 @@ public class ShopUI : MonoBehaviour
     [SerializeField] private TMP_Text coinsText;
     [SerializeField] private TMP_Text statusText;
     [SerializeField] private TMP_Text descriptionText;
+
+    [Header("Selection Highlight")]
+    [SerializeField] private RectTransform selectionHighlight;
+    [SerializeField] private Vector2 highlightPadding = new Vector2(10f, 10f);
 
     private readonly List<ShopRow> rows = new List<ShopRow>();
     private ShopController current;
@@ -58,6 +63,7 @@ public class ShopUI : MonoBehaviour
         SetGroup(rootGroup, false);
         SetGroup(listGroup, false);
         SetGroup(quantityGroup, false);
+        if (selectionHighlight != null) selectionHighlight.gameObject.SetActive(false);
     }
 
     private void OnEnable()
@@ -67,10 +73,44 @@ public class ShopUI : MonoBehaviour
 
     private void Update()
     {
-        if (step == Step.None || cancelRef == null || !cancelRef.action.WasPressedThisFrame()) return;
+        if (step == Step.None) return;
 
-        if (step == Step.Quantity) ShowList();
-        else Close();
+        if (cancelRef != null && cancelRef.action.WasPressedThisFrame())
+        {
+            if (step == Step.Quantity) ShowList();
+            else Close();
+            return;
+        }
+
+        UpdateHighlight();
+    }
+
+    private void UpdateHighlight()
+    {
+        if (selectionHighlight == null) return;
+
+        GameObject selected = EventSystem.current != null ? EventSystem.current.currentSelectedGameObject : null;
+
+        if (selected != null
+            && selected.transform.IsChildOf(rootGroup.transform)
+            && selected.TryGetComponent<RectTransform>(out var target))
+        {
+            selectionHighlight.gameObject.SetActive(true);
+            selectionHighlight.position = target.TransformPoint(target.rect.center);
+            selectionHighlight.sizeDelta = target.rect.size + highlightPadding;
+        }
+        else
+        {
+            selectionHighlight.gameObject.SetActive(false);
+        }
+    }
+
+    // the list stays visible in both steps; it's only locked while you pick a quantity
+    private void SetListInteractable(bool value)
+    {
+        listGroup.alpha = 1f;
+        listGroup.interactable = value;
+        listGroup.blocksRaycasts = value;
     }
 
     // ---------------- Open / close ----------------
@@ -111,6 +151,7 @@ public class ShopUI : MonoBehaviour
         SetGroup(listGroup, false);
         SetGroup(quantityGroup, false);
         SetGroup(rootGroup, false);
+        selectionHighlight.gameObject.SetActive(false);
 
         var shop = current;
         current = null;
@@ -122,8 +163,9 @@ public class ShopUI : MonoBehaviour
     private void ShowList(string message = "")
     {
         step = Step.List;
+
         SetGroup(quantityGroup, false);
-        SetGroup(listGroup, true);
+        SetListInteractable(true);
 
         RefreshCoins();
         statusText.text = message;
@@ -148,7 +190,7 @@ public class ShopUI : MonoBehaviour
 
         if (max < 1)
         {
-            statusText.text = space < 1 ? "You can't carry any more" : "Not enough coins";
+            statusText.text = space < 1 ? "!!! You can't carry any more" : "!!! Not enough coins";
             return;
         }
 
@@ -160,7 +202,8 @@ public class ShopUI : MonoBehaviour
         UpdateTotal();
 
         step = Step.Quantity;
-        SetGroup(listGroup, false);
+        // SetGroup(listGroup, false);
+        SetListInteractable(false);   // was SetGroup(listGroup, false)
         SetGroup(quantityGroup, true);
         statusText.text = "";
 
@@ -177,8 +220,9 @@ public class ShopUI : MonoBehaviour
         int qty = (int)amountSlider.value;
         int total = qty * selected.price;
 
-        quantityItemText.text = $"{selected.item.displayName}  x{qty}";
-        totalText.text = $"Total: {total} coins   (you have {Coins})";
+        amountText.text = qty.ToString();
+        quantityItemText.text = selected.item.displayName;
+        totalText.text = $"Total: {total} coins \n\n (you have {Coins})";
     }
 
     private void OnConfirmPressed()

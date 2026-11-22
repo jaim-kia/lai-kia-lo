@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 public class InventoryUI : MonoBehaviour
 {
-    private const int Capacity = 16;
+    private const int Capacity = 12;
 
     [Header("Input")]
     [SerializeField] private InputActionReference toggleRef;

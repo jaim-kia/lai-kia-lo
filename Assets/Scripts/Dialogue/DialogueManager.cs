@@ -210,6 +210,8 @@ public class DialogueManager : MonoBehaviour
         isPaused = false;
         SetDialogueVisible(true);
         suppressContinueThisFrame = true;
+        Debug.Log($"[Dialogue] resuming. offeringSuccess={GetStoryVariable("offeringSuccess")} " +
+          $"failType={GetStoryVariable("failType")} chosenType={GetStoryVariable("chosenType")}");
         ContinueStory();
     }
 

@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TapeData
   displayName: Tape 01
   icon: {fileID: 21300000, guid: e6f972e8468910a488c24b65ab9ff4d3, type: 3}
-  description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. '
+  description: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad 2
   maxStack: 99
+  sortId: 0
   inkJSON: {fileID: 4900000, guid: 3461bfbe6adb13e41a8c6edb7a88385f, type: 3}
   speakerLabel: Cassette Tape

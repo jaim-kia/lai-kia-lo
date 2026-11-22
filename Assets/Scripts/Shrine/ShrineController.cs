@@ -37,17 +37,17 @@ public class ShrineController : MonoBehaviour
 
     private void HandleDialogueTag(GameObject speaker, string tag)
     {
+        Debug.Log($"[Shrine] tag=[{tag}] speaker={speaker?.name} this={name} unlocked={IsUnlocked}");
         if (speaker != gameObject) return;
 
         if (tag == "request_amount")
         {
-            string incenseType = (string)DialogueManager.GetInstance().GetStoryVariable("chosenType");
-
             DialogueManager.GetInstance().PauseDialogue();
-            ShrineOfferingUI.Instance.Open(this, incenseType);
+            ShrineOfferingUI.Instance.Open(this);
         }
         else if (tag == "unlock_shrine" && !IsUnlocked)
         {
+            Debug.Log("AAAAAAAAAAAAAAAAAAAAAAAAAAA");
             IsUnlocked = true;
             WorldState.Instance.Set(StateKey); 
             SpawnBench();
@@ -85,6 +85,13 @@ public class ShrineController : MonoBehaviour
         ItemData incense = Inventory.Instance.GetItem("incense_" + incenseType);
         bool success = amountReq && typeReq && incense != null && Inventory.Instance.TryRemove(incense, amount);
 
+        Debug.Log($"[Shrine] offered {amount} '{incenseType}': " +
+                $"amountReq={amountReq} (needs {incenseCost}), " +
+                $"typeReq={typeReq} (needs '{incenseTypeRequired}'), " +
+                $"assetFound={Inventory.Instance.GetItem("incense_" + incenseType) != null}, " +
+                $"success={success}");
+                
+        dm.SetStoryVariable("chosenType", incenseType);
         dm.SetStoryVariable("chosenAmount", amount);
         dm.SetStoryVariable("offeringSuccess", success);
 
