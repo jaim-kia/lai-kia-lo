@@ -1,5 +1,5 @@
-The recording crackles to life.
-"Day forty-one. The lights still haven't come back on."
-"If anyone finds this... don't go below the third floor."
-The tape clicks off.
+Hi Panelists.
+This is a tape
+Nothing much really just a tape it uses the dialogue box to highlight that it's an audio in the game world
+Tape ends.
 -> END
