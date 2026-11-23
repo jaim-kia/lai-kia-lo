@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: incense_red
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   displayName: Red Incense
-  icon: {fileID: 21300000, guid: e6f972e8468910a488c24b65ab9ff4d3, type: 3}
+  icon: {fileID: 21300000, guid: b94b8703ab6bcd849bc0edf45ae144f1, type: 3}
   description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
     tempor incididunt ut labore et dolore magna aliqua. Ut enim ad '
   maxStack: 99

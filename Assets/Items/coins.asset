@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: coins
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   displayName: Lucky Coin
-  icon: {fileID: 21300000, guid: 3e532cddf82914c4ca46123dc487e51a, type: 3}
+  icon: {fileID: 21300000, guid: 6a51b25b86554a747a755f92786b0695, type: 3}
   description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
     tempor incididunt ut labore et dolore magna aliqua. Ut enim ad '
   maxStack: 99

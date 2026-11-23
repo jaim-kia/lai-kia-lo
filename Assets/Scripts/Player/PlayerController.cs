@@ -102,6 +102,9 @@ public class PlayerController : MonoBehaviour
     private bool frozen;
     private float heldHorizontal;
 
+    private MaterialPropertyBlock propBlock;
+    private static readonly int CustomFlipID = Shader.PropertyToID("_CustomFlip");
+
     private void OnEnable()
     {
         GameManager.OnGameStateChanged += HandleStateChanged;
@@ -146,6 +149,7 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
+        propBlock = new MaterialPropertyBlock();
         baseSpeed = speed;
         Physics.gravity = grav;
 
@@ -370,12 +374,20 @@ public class PlayerController : MonoBehaviour
         if (finalHorizontal > 0f)
         {
             facingDirection = FacingDirection.Right;
-            spriteRenderer.flipX = false;
+            // spriteRenderer.flipX = false;
+
+            spriteRenderer.GetPropertyBlock(propBlock);
+            propBlock.SetVector(CustomFlipID, new Vector2(1f, 1f));
+            spriteRenderer.SetPropertyBlock(propBlock);
         }
         else if (finalHorizontal < 0)
         {
             facingDirection = FacingDirection.Left;    
-            spriteRenderer.flipX = true;
+            // spriteRenderer.flipX = true;
+
+            spriteRenderer.GetPropertyBlock(propBlock);
+            propBlock.SetVector(CustomFlipID, new Vector2(-1f, 1f));
+            spriteRenderer.SetPropertyBlock(propBlock);
         }
 
         

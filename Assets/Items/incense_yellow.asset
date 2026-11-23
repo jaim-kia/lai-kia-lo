@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: incense_yellow
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   displayName: Yellow Incense
-  icon: {fileID: 21300000, guid: e6f972e8468910a488c24b65ab9ff4d3, type: 3}
+  icon: {fileID: 21300000, guid: e6048663d94f23345b4dc9696e568bad, type: 3}
   description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
     tempor incididunt ut labore et dolore magna aliqua. Ut enim ad '
   maxStack: 99
