@@ -38,6 +38,7 @@ public class DialogueManager : MonoBehaviour
     private bool suppressContinueThisFrame;
 
     private bool worldFrozen;
+    public static event Action<GameObject> OnDialogueEnded;
 
     private void OnDisable()
     {
@@ -156,6 +157,7 @@ public class DialogueManager : MonoBehaviour
         }
 
         GameManager.Instance.UpdateGameState(GameState.Overworld);
+        OnDialogueEnded?.Invoke(currentSpeaker);
     }
 
 

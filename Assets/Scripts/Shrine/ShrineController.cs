@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class ShrineController : MonoBehaviour
+public class ShrineController : MonoBehaviour,  IOfferingReceiver
 {
 
     [SerializeField] private string shrineId = "main"; // unique within this room

@@ -44,7 +44,8 @@ public class ShrineOfferingUI : MonoBehaviour
     [SerializeField] private RectTransform selectionHighlight;
     [SerializeField] private Vector2 highlightPadding = new Vector2(10f, 10f);
 
-    private ShrineController currentShrine;
+    private IOfferingReceiver currentShrine;   // was ShrineController
+
     private string currentType;
     private int lastOptionIndex;
     private Step step = Step.None;
@@ -87,7 +88,7 @@ public class ShrineOfferingUI : MonoBehaviour
 
     // ---------------- Open / close ----------------
 
-    public void Open(ShrineController shrine)
+    public void Open(IOfferingReceiver shrine) // was ShrineController
     {
         if (options.Length == 0)
         {

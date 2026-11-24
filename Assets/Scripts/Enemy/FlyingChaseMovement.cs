@@ -11,7 +11,7 @@ public class FlyingChaseMovement : MonoBehaviour, IEnemyMovement
     [SerializeField] private float returnSpeed = 2f;
     [SerializeField] private float returnThreshold = 0.1f;
 
-    [Header("Optional: hand control back once returned home")]
+    [Header("Optional: hover while idle")]
     [SerializeField] private MonoBehaviour hoverComponent;
 
     private IEnemyMovement hover;
@@ -21,10 +21,14 @@ public class FlyingChaseMovement : MonoBehaviour, IEnemyMovement
     private bool isChasing;
     private bool isReturning;
 
+    private void Awake()
+    {
+        hover = hoverComponent as IEnemyMovement;
+    }
+
     private void Start()
     {
         player = PlayerController.Instance.transform;
-        hover = hoverComponent as IEnemyMovement;
         startPos = transform.position;
     }
 
@@ -38,13 +42,16 @@ public class FlyingChaseMovement : MonoBehaviour, IEnemyMovement
         {
             isChasing = true;
             isReturning = false;
-            hover?.SetActive(false);
         }
         else if (isChasing && distance >= loseRadius)
         {
             isChasing = false;
             isReturning = true;
         }
+
+        // enforced every frame: Enemy.cs turns every movement component back on after a hit,
+        // which would otherwise leave hover running while we chase
+        hover?.SetActive(!isChasing && !isReturning);
 
         if (isChasing)
         {
@@ -56,22 +63,15 @@ public class FlyingChaseMovement : MonoBehaviour, IEnemyMovement
             transform.position = Vector3.MoveTowards(transform.position, startPos, returnSpeed * Time.deltaTime);
 
             if (Vector3.Distance(transform.position, startPos) <= returnThreshold)
-            {
-                isReturning = false;
-                hover?.SetActive(true); 
-            }
+                isReturning = false; // hover takes over next frame, already at startPos
         }
     }
 
     public void SetActive(bool isActive)
     {
         active = isActive;
-        if (!isActive)
-        {
-            isChasing = false;
-            isReturning = false;
-            hover?.SetActive(false);
-        }
+        if (!isActive) hover?.SetActive(false);
+        // chase/return state is kept, so after a stun it carries on instead of resetting
     }
 
     private void OnDrawGizmosSelected()

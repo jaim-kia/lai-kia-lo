@@ -5,21 +5,29 @@ public class FlyingHoverMovement : MonoBehaviour, IEnemyMovement
     [SerializeField] private float hoverSpeed = 1.5f;
     [SerializeField] private float hoverHeight = 0.5f;
 
-    private Vector3 startPos;
+    private float t;
+    private float lastOffset;
     private bool active = true;
-
-    private void Start()
-    {
-        startPos = transform.position;
-    }
 
     private void Update()
     {
         if (!active) return;
 
-        float yOffset = Mathf.Sin(Time.time * hoverSpeed) * hoverHeight;
-        transform.position = startPos + new Vector3(0, yOffset, 0);
+        t += Time.deltaTime;
+        float offset = Mathf.Sin(t * hoverSpeed) * hoverHeight;
+
+        // apply only the change since last frame, so nothing else's movement gets overwritten
+        transform.position += Vector3.up * (offset - lastOffset);
+        lastOffset = offset;
     }
 
-    public void SetActive(bool isActive) => active = isActive;
+    public void SetActive(bool isActive)
+    {
+        if (active == isActive) return; // safe to call every frame
+        active = isActive;
+
+        // hover around wherever the enemy is now, not where it started
+        t = 0f;
+        lastOffset = 0f;
+    }
 }
